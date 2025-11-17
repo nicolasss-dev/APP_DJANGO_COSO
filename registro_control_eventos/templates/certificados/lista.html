@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Certificados - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Gestión de Certificados</h1>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Certificados Generados</h2>
+    </div>
+    <div class="card-body">
+        {% if certificados %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Código</th>
+                    <th>Participante</th>
+                    <th>Evento</th>
+                    <th>Fecha Generación</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for certificado in certificados %}
+                <tr>
+                    <td>{{ certificado.codigo_verificacion }}</td>
+                    <td>{{ certificado.inscripcion.get_nombre_completo }}</td>
+                    <td>{{ certificado.inscripcion.evento.nombre }}</td>
+                    <td>{{ certificado.fecha_generacion|date:"d/m/Y" }}</td>
+                    <td>
+                        <a href="{% url 'certificados:enviar' certificado.pk %}" class="btn btn-secondary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">Enviar</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">
+            No hay certificados generados.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

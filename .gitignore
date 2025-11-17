@@ -1,0 +1,12 @@
+venv/
+.env
+__pycache__/
+*.pyc
+*.pyo
+*.log
+*.sqlite3
+registro_control_eventos/db.sqlite3
+registro_control_eventos/logs/
+registro_control_eventos/staticfiles/
+registro_control_eventos/media/
+.cursor/

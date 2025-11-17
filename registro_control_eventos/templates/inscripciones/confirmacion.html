@@ -1,0 +1,204 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Inscripción Confirmada - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>¡Inscripción Exitosa!</h1>
+{% endblock %}
+
+{% block content %}
+<div style="max-width: 800px; margin: 0 auto;">
+    <!-- Mensaje de Éxito -->
+    <div class="card" style="border-left: 4px solid #28a745;">
+        <div class="card-body" style="text-align: center; padding: 3rem 2rem;">
+            <div style="font-size: 4rem; color: #28a745; margin-bottom: 1rem;">✓</div>
+            <h2 style="color: #28a745; margin-bottom: 1rem;">¡Inscripción Confirmada!</h2>
+            <p style="font-size: 1.125rem; color: #6c757d; margin-bottom: 0;">
+                Se ha registrado exitosamente al evento
+            </p>
+        </div>
+    </div>
+    
+    <!-- Detalles de la Inscripción -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Detalles de su Inscripción</h3>
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <tr>
+                    <th style="width: 40%;">Nombre Completo:</th>
+                    <td>{{ inscripcion.get_nombre_completo }}</td>
+                </tr>
+                <tr>
+                    <th>Documento:</th>
+                    <td>{{ inscripcion.documento }}</td>
+                </tr>
+                <tr>
+                    <th>Correo Electrónico:</th>
+                    <td>{{ inscripcion.correo }}</td>
+                </tr>
+                <tr>
+                    <th>Teléfono:</th>
+                    <td>{{ inscripcion.telefono }}</td>
+                </tr>
+                <tr>
+                    <th>Estado de Inscripción:</th>
+                    <td>
+                        {% if inscripcion.estado == 'CONFIRMADA' %}
+                            <span class="badge badge-success">{{ inscripcion.get_estado_display }}</span>
+                        {% elif inscripcion.estado == 'PENDIENTE' %}
+                            <span class="badge badge-warning">{{ inscripcion.get_estado_display }}</span>
+                        {% else %}
+                            <span class="badge badge-secondary">{{ inscripcion.get_estado_display }}</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <th>Fecha de Inscripción:</th>
+                    <td>{{ inscripcion.fecha_inscripcion|date:"d/m/Y H:i" }}</td>
+                </tr>
+            </table>
+        </div>
+    </div>
+    
+    <!-- Información del Evento -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Información del Evento</h3>
+        </div>
+        <div class="card-body">
+            <h4 style="margin-bottom: 1rem;">{{ evento.nombre }}</h4>
+            <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+                <span class="badge badge-info">{{ evento.tipo_evento }}</span>
+                {% if evento.es_gratuito %}
+                    <span class="badge badge-success">Gratuito</span>
+                {% else %}
+                    <span class="badge badge-warning">${{ evento.costo|floatformat:0 }}</span>
+                {% endif %}
+            </div>
+            
+            <table style="width: 100%; font-size: 0.875rem;">
+                <tr>
+                    <td style="padding: 0.5rem 0;"><strong>📅 Fecha de Inicio:</strong></td>
+                    <td style="padding: 0.5rem 0;">{{ evento.fecha_inicio|date:"l, d \d\e F \d\e Y \a \l\a\s H:i" }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.5rem 0;"><strong>📅 Fecha de Fin:</strong></td>
+                    <td style="padding: 0.5rem 0;">{{ evento.fecha_fin|date:"l, d \d\e F \d\e Y \a \l\a\s H:i" }}</td>
+                </tr>
+                <tr>
+                    <td style="padding: 0.5rem 0;"><strong>📍 Lugar:</strong></td>
+                    <td style="padding: 0.5rem 0;">{{ evento.lugar }}</td>
+                </tr>
+                {% if evento.direccion %}
+                <tr>
+                    <td style="padding: 0.5rem 0;"><strong>📍 Dirección:</strong></td>
+                    <td style="padding: 0.5rem 0;">{{ evento.direccion }}</td>
+                </tr>
+                {% endif %}
+            </table>
+        </div>
+    </div>
+    
+    <!-- Próximos Pasos -->
+    <div class="card">
+        <div class="card-header">
+            <h3>Próximos Pasos</h3>
+        </div>
+        <div class="card-body">
+            <ol style="line-height: 2;">
+                <li>
+                    <strong>Revise su correo electrónico</strong><br>
+                    <small style="color: #6c757d;">
+                        Hemos enviado una confirmación a <strong>{{ inscripcion.correo }}</strong> con los detalles del evento
+                        {% if not evento.es_gratuito %}y las instrucciones para completar el pago{% endif %}.
+                    </small>
+                </li>
+                
+                {% if not evento.es_gratuito %}
+                <li>
+                    <strong>Complete el pago</strong><br>
+                    <small style="color: #6c757d;">
+                        El monto a pagar es de <strong>${{ evento.costo|floatformat:2 }}</strong>. 
+                        Siga las instrucciones en el correo para confirmar su cupo.
+                    </small>
+                </li>
+                {% endif %}
+                
+                <li>
+                    <strong>Guarde el código QR</strong><br>
+                    <small style="color: #6c757d;">
+                        El código QR adjunto en el correo será necesario para registrar su asistencia el día del evento.
+                    </small>
+                </li>
+                
+                <li>
+                    <strong>Asista al evento</strong><br>
+                    <small style="color: #6c757d;">
+                        Presente su código QR al ingresar para registrar su asistencia.
+                    </small>
+                </li>
+                
+                {% if evento.genera_certificado %}
+                <li>
+                    <strong>Obtenga su certificado</strong><br>
+                    <small style="color: #6c757d;">
+                        Si cumple con el {{ evento.porcentaje_asistencia_minimo }}% de asistencia, recibirá automáticamente su certificado al finalizar el evento.
+                    </small>
+                </li>
+                {% endif %}
+            </ol>
+        </div>
+    </div>
+    
+    <!-- Avisos Importantes -->
+    {% if inscripcion.estado == 'PENDIENTE' %}
+    <div style="padding: 1rem; background-color: #fff3cd; border-left: 4px solid #ffc107; margin-bottom: 1.5rem;">
+        <strong style="color: #856404;">⚠️ Pago Pendiente</strong><br>
+        <small style="color: #856404;">
+            Su inscripción está en estado PENDIENTE hasta que complete el pago. 
+            Su cupo será reservado por 48 horas. Después de ese tiempo, si no se confirma el pago, 
+            el cupo podrá ser asignado a otra persona.
+        </small>
+    </div>
+    {% endif %}
+    
+    {% if evento.genera_certificado %}
+    <div style="padding: 1rem; background-color: #d1ecf1; border-left: 4px solid #0c5460; margin-bottom: 1.5rem;">
+        <strong style="color: #0c5460;">📜 Certificado de Participación</strong><br>
+        <small style="color: #0c5460;">
+            Este evento genera certificado de participación. Para recibirlo, debe asistir al menos al {{ evento.porcentaje_asistencia_minimo }}% 
+            de las {{ evento.numero_sesiones }} sesión{{ evento.numero_sesiones|pluralize:"es" }} del evento.
+        </small>
+    </div>
+    {% endif %}
+    
+    <!-- Botones de Acción -->
+    <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem; flex-wrap: wrap;">
+        <a href="{% url 'inscripciones:registro_publico' %}" class="btn btn-primary">
+            Ver Más Eventos
+        </a>
+        <a href="{% url 'eventos:detalle' evento.pk %}" class="btn btn-outline">
+            Ver Detalles del Evento
+        </a>
+        {% if user.is_authenticated %}
+        <a href="{% url 'usuarios:perfil' %}" class="btn btn-secondary">
+            Mi Perfil
+        </a>
+        {% endif %}
+    </div>
+    
+    <!-- Información de Contacto -->
+    <div style="text-align: center; margin-top: 2rem; padding-top: 2rem; border-top: 1px solid #dee2e6; color: #6c757d;">
+        <p>
+            ¿Tiene alguna pregunta? Contacte al organizador del evento o visite nuestro sitio web.
+        </p>
+        <p style="font-size: 0.875rem;">
+            <strong>Código de Inscripción:</strong> #{{ inscripcion.pk }}
+        </p>
+    </div>
+</div>
+{% endblock %}
+

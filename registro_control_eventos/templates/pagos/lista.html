@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block title %}Pagos - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Gestión de Pagos</h1>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Registro de Pagos</h2>
+    </div>
+    <div class="card-body">
+        {% if pagos %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Evento</th>
+                    <th>Participante</th>
+                    <th>Monto</th>
+                    <th>Método</th>
+                    <th>Estado</th>
+                    <th>Fecha</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for pago in pagos %}
+                <tr>
+                    <td>{{ pago.inscripcion.evento.nombre }}</td>
+                    <td>{{ pago.inscripcion.get_nombre_completo }}</td>
+                    <td>${{ pago.monto|floatformat:2 }}</td>
+                    <td>{{ pago.get_metodo_pago_display }}</td>
+                    <td><span class="badge badge-{{ pago.estado|lower }}">{{ pago.get_estado_display }}</span></td>
+                    <td>{{ pago.fecha_pago|date:"d/m/Y" }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">
+            No hay pagos registrados.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Dashboard - PRCE{% endblock %}
+
+{% block page_title %}
+<h2>Dashboard</h2>
+<p style="color: #6c757d;">Bienvenido, {{ user.get_full_name|default:user.username }}</p>
+{% endblock %}
+
+{% block content %}
+<!-- Tarjetas de estadísticas -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #3498db; font-size: 2.5rem; margin: 0;">{{ stats.total_eventos }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Eventos Totales</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #27ae60; font-size: 2.5rem; margin: 0;">{{ stats.total_inscripciones }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Inscripciones</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #f39c12; font-size: 2.5rem; margin: 0;">${{ stats.total_recaudado|floatformat:0 }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Recaudado</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #e74c3c; font-size: 2.5rem; margin: 0;">{{ stats.promedio_asistencia|floatformat:1 }}%</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Asistencia Promedio</p>
+        </div>
+    </div>
+</div>
+
+<!-- Acciones rápidas -->
+{% if user.puede_gestionar_eventos %}
+<div class="card">
+    <div class="card-header">
+        <h3 style="margin: 0;">Acciones Rápidas</h3>
+    </div>
+    <div class="card-body">
+        <div class="d-flex" style="gap: 1rem; flex-wrap: wrap;">
+            <a href="{% url 'eventos:crear' %}" class="btn btn-primary">
+                + Crear Evento
+            </a>
+            <a href="{% url 'inscripciones:registro_masivo' %}" class="btn btn-secondary">
+                Carga Masiva
+            </a>
+            <a href="{% url 'certificados:generar_masivo' %}" class="btn btn-secondary">
+                Generar Certificados
+            </a>
+            <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline">
+                Ver Reportes
+            </a>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Próximos eventos -->
+<div class="card">
+    <div class="card-header">
+        <h3 style="margin: 0;">Próximos Eventos</h3>
+    </div>
+    <div class="card-body">
+        {% if proximos_eventos %}
+        <div class="table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Fecha</th>
+                        <th>Lugar</th>
+                        <th>Inscritos</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in proximos_eventos %}
+                    <tr>
+                        <td>{{ evento.nombre }}</td>
+                        <td>{{ evento.fecha_inicio|date:"d/m/Y" }}</td>
+                        <td>{{ evento.lugar }}</td>
+                        <td>{{ evento.total_inscritos }} / {{ evento.cupo_maximo }}</td>
+                        <td>
+                            <span class="badge badge-{% if evento.estado == 'PUBLICADO' %}success{% elif evento.estado == 'BORRADOR' %}secondary{% else %}info{% endif %}">
+                                {{ evento.get_estado_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <a href="{% url 'eventos:detalle' evento.id %}" class="btn btn-sm btn-outline">
+                                Ver
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #6c757d; text-align: center; padding: 2rem;">
+            No hay eventos próximos
+        </p>
+        {% endif %}
+    </div>
+</div>
+
+<!-- Eventos Disponibles (Solo para Asistentes) -->
+{% if eventos_disponibles %}
+<div class="card">
+    <div class="card-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin: 0;">Eventos Disponibles para Inscribirse</h3>
+        <a href="{% url 'inscripciones:registro_publico' %}" class="btn btn-sm btn-primary">
+            Ver Todos
+        </a>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; gap: 1rem;">
+            {% for evento in eventos_disponibles %}
+            <div class="card" style="margin: 0; border-left: 4px solid #3498db;">
+                <div class="card-body">
+                    <div style="display: flex; justify-content: space-between; align-items: start; flex-wrap: wrap; gap: 1rem;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 0.5rem;">{{ evento.nombre }}</h4>
+                            <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 0.5rem;">
+                                <span class="badge badge-info">{{ evento.tipo_evento }}</span>
+                                {% if evento.es_gratuito %}
+                                    <span class="badge badge-success">Gratuito</span>
+                                {% else %}
+                                    <span class="badge badge-warning">${{ evento.costo|floatformat:0 }}</span>
+                                {% endif %}
+                            </div>
+                            <div style="font-size: 0.875rem; color: #6c757d;">
+                                <div>📅 {{ evento.fecha_inicio|date:"d/m/Y H:i" }}</div>
+                                <div>📍 {{ evento.lugar }}</div>
+                                <div>👥 {{ evento.cupos_disponibles }} cupos disponibles</div>
+                            </div>
+                        </div>
+                        <div>
+                            <a href="{% url 'inscripciones:registro_publico_evento' evento.pk %}" class="btn btn-primary">
+                                Inscribirse
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<!-- Actividad reciente -->
+{% if user.es_administrador %}
+<div class="card">
+    <div class="card-header">
+        <h3 style="margin: 0;">Actividad Reciente</h3>
+    </div>
+    <div class="card-body">
+        {% if actividad_reciente %}
+        <ul style="list-style: none; padding: 0;">
+            {% for actividad in actividad_reciente %}
+            <li style="padding: 0.75rem 0; border-bottom: 1px solid #dee2e6;">
+                <strong>{{ actividad.usuario }}</strong>
+                {{ actividad.accion }}
+                <span style="color: #6c757d;">{{ actividad.fecha|timesince }} atrás</span>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p style="color: #6c757d; text-align: center; padding: 2rem;">
+            No hay actividad reciente
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endblock %}
+

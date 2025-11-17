@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Iniciar Sesión - PRCE{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-center align-center" style="min-height: 60vh;">
+    <div class="card" style="max-width: 500px; width: 100%;">
+        <div class="card-header text-center">
+            <h2>Iniciar Sesión</h2>
+        </div>
+        
+        <div class="card-body">
+            <form method="post" action="{% url 'usuarios:login' %}" data-validate>
+                {% csrf_token %}
+                
+                <div class="form-group">
+                    <label for="id_username" class="form-label">
+                        Usuario o Correo Electrónico *
+                    </label>
+                    <input 
+                        type="text" 
+                        name="username" 
+                        id="id_username" 
+                        class="form-control" 
+                        required 
+                        autofocus
+                        autocomplete="username"
+                        aria-label="Usuario o correo electrónico"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_password" class="form-label">
+                        Contraseña *
+                    </label>
+                    <input 
+                        type="password" 
+                        name="password" 
+                        id="id_password" 
+                        class="form-control" 
+                        required
+                        autocomplete="current-password"
+                        aria-label="Contraseña"
+                    >
+                </div>
+                
+                <div class="form-group">
+                    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                        <input 
+                            type="checkbox" 
+                            name="remember_me" 
+                            id="id_remember_me" 
+                            class="form-check-input"
+                        >
+                        <span>Recordarme</span>
+                    </label>
+                </div>
+                
+                {% if form.errors %}
+                <div class="alert alert-danger" role="alert">
+                    <strong>Error:</strong> Usuario o contraseña inválidos
+                </div>
+                {% endif %}
+                
+                <div class="form-group">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Iniciar Sesión
+                    </button>
+                </div>
+                
+                <div class="text-center">
+                    <p>
+                        <a href="{% url 'usuarios:recuperar_password' %}">
+                            ¿Olvidó su contraseña?
+                        </a>
+                    </p>
+                    <p style="margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #dee2e6;">
+                        ¿No tiene cuenta? 
+                        <a href="{% url 'usuarios:registro_publico' %}">
+                            Regístrese como asistente
+                        </a>
+                    </p>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

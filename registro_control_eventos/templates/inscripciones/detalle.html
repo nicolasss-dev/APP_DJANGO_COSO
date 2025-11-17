@@ -1,0 +1,21 @@
+{% extends 'base.html' %}
+
+{% block title %}Detalle de Inscripción - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Detalle de Inscripción</h1>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Información de la Inscripción</h2>
+    </div>
+    <div class="card-body">
+        <p>Detalle de inscripción #{{ inscripcion.pk }}</p>
+        <p><strong>Evento:</strong> {{ inscripcion.evento.nombre }}</p>
+        <p><strong>Estado:</strong> <span class="badge badge-info">{{ inscripcion.get_estado_display }}</span></p>
+    </div>
+</div>
+{% endblock %}
+
