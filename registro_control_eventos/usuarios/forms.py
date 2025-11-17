@@ -191,6 +191,13 @@ class UsuarioForm(UserCreationForm):
         super().__init__(*args, **kwargs)
         self.fields['password1'].widget.attrs.update({'class': 'form-control'})
         self.fields['password2'].widget.attrs.update({'class': 'form-control'})
+        
+        # Si se está editando un usuario existente, hacer los campos de contraseña opcionales
+        if self.instance and self.instance.pk:
+            self.fields['password1'].required = False
+            self.fields['password2'].required = False
+            self.fields['password1'].help_text = 'Deje vacío si no desea cambiar la contraseña'
+            self.fields['password2'].help_text = 'Deje vacío si no desea cambiar la contraseña'
     
     def clean_email(self):
         """Validar que el email sea único (HU-11)"""
@@ -205,6 +212,90 @@ class UsuarioForm(UserCreationForm):
         if Usuario.objects.filter(documento=documento).exclude(pk=self.instance.pk if self.instance.pk else None).exists():
             raise ValidationError('Este documento ya está registrado')
         return documento
+    
+    def clean_username(self):
+        """Validar que el username sea único excepto el propio (HU-11)"""
+        username = self.cleaned_data.get('username')
+        if Usuario.objects.filter(username=username).exclude(pk=self.instance.pk if self.instance.pk else None).exists():
+            raise ValidationError('Este nombre de usuario ya está en uso')
+        return username
+    
+    def clean_password1(self):
+        """Validar contraseña solo si se está creando o cambiando"""
+        password1 = self.cleaned_data.get('password1')
+        
+        # Si se está editando y no se proporcionó contraseña, no validar
+        if self.instance and self.instance.pk and not password1:
+            return password1
+        
+        # Si se proporcionó contraseña, validar que tenga al menos 8 caracteres
+        if password1 and len(password1) < 8:
+            raise ValidationError('La contraseña debe tener al menos 8 caracteres')
+        
+        return password1
+    
+    def clean_password2(self):
+        """Validar contraseñas solo si se está creando o cambiando contraseña"""
+        password1 = self.cleaned_data.get('password1')
+        password2 = self.cleaned_data.get('password2')
+        
+        # Si se está editando y no se proporcionó contraseña, no validar
+        if self.instance and self.instance.pk:
+            if not password1 and not password2:
+                return password2
+        
+        # Validación normal: las contraseñas deben coincidir
+        if password1 and password2 and password1 != password2:
+            raise ValidationError('Las contraseñas no coinciden')
+        
+        return password2
+    
+    def clean(self):
+        """Validar formulario completo, permitir contraseñas vacías al editar"""
+        cleaned_data = super().clean()
+        
+        # Si se está editando y no se proporcionó contraseña, no validar
+        if self.instance and self.instance.pk:
+            password1 = cleaned_data.get('password1')
+            password2 = cleaned_data.get('password2')
+            
+            # Si ambas están vacías, está bien (no se cambia la contraseña)
+            if not password1 and not password2:
+                return cleaned_data
+        
+        # Para creación o cambio de contraseña, la validación normal de UserCreationForm aplica
+        return cleaned_data
+    
+    def save(self, commit=True):
+        """Guardar usuario, solo establecer contraseña si se proporcionó"""
+        password = self.cleaned_data.get('password1')
+        
+        # Si se está editando y no se proporcionó contraseña, usar ModelForm.save() directamente
+        # para no modificar la contraseña existente
+        if self.instance and self.instance.pk and not password:
+            # Guardar directamente sin tocar la contraseña
+            user = super(forms.ModelForm, self).save(commit=False)
+            if commit:
+                user.save()
+            return user
+        
+        # Si se está creando o cambiando contraseña
+        # Usar ModelForm.save() para obtener el usuario, luego establecer contraseña manualmente
+        # Esto evita que UserCreationForm.save() modifique la contraseña incorrectamente
+        user = super(forms.ModelForm, self).save(commit=False)
+        
+        # Establecer contraseña solo si se proporcionó
+        if password:
+            user.set_password(password)
+        elif not self.instance.pk:
+            # Si es creación y no hay contraseña, esto no debería pasar
+            # pero por seguridad, lanzar un error
+            raise ValueError('La contraseña es requerida para crear un nuevo usuario')
+        
+        if commit:
+            user.save()
+        
+        return user
 
 
 class PerfilForm(forms.ModelForm):
