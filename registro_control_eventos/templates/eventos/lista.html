@@ -114,10 +114,10 @@
             <!-- Botones -->
             <div style="display: flex; gap: 1rem;">
                 <button type="submit" class="btn btn-primary">
-                    🔍 Buscar
+                     Buscar
                 </button>
                 <a href="{% url 'eventos:lista' %}" class="btn btn-secondary">
-                    🔄 Limpiar Filtros
+                     Limpiar Filtros
                 </a>
             </div>
         </form>
@@ -146,7 +146,7 @@
                             {% if evento.imagen_banner %}
                                 <img src="{{ evento.imagen_banner.url }}" alt="{{ evento.nombre }}" style="width: 100%; height: 100%; object-fit: cover;">
                             {% else %}
-                                <span style="color: #6c757d; font-size: 3rem;">📅</span>
+                                <span style="color: #6c757d; font-size: 3rem;"></span>
                             {% endif %}
                         </div>
                         
@@ -186,20 +186,20 @@
                             
                             <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 0.5rem; margin-top: 1rem; font-size: 0.875rem;">
                                 <div>
-                                    <strong>📅 Inicio:</strong><br>
+                                    <strong> Inicio:</strong><br>
                                     {{ evento.fecha_inicio|date:"d/m/Y H:i" }}
                                 </div>
                                 <div>
-                                    <strong>📍 Lugar:</strong><br>
+                                    <strong> Lugar:</strong><br>
                                     {{ evento.lugar }}
                                 </div>
                                 <div>
-                                    <strong>👥 Cupos:</strong><br>
+                                    <strong> Cupos:</strong><br>
                                     {{ evento.total_inscritos }}/{{ evento.cupo_maximo }}
                                 </div>
                                 {% if not evento.es_gratuito %}
                                 <div>
-                                    <strong>💵 Costo:</strong><br>
+                                    <strong> Costo:</strong><br>
                                     ${{ evento.costo|floatformat:2 }}
                                 </div>
                                 {% endif %}
