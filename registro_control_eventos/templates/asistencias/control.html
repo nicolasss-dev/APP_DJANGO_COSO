@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Control de Asistencias - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Control de Asistencias</h1>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Registro de Asistencias</h2>
+    </div>
+    <div class="card-body">
+        <p>Seleccione un evento de la lista para gestionar las asistencias.</p>
+        <a href="{% url 'asistencias:lista' %}" class="btn btn-primary">Ver Eventos</a>
+    </div>
+</div>
+{% endblock %}
+

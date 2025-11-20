@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Asistencias - {{ evento.nombre }} - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Asistencias: {{ evento.nombre }}</h1>
+{% endblock %}
+
+{% block content %}
+<div class="card">
+    <div class="card-header">
+        <h2>Lista de Inscritos</h2>
+    </div>
+    <div class="card-body">
+        {% if inscripciones %}
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Participante</th>
+                    <th>Estado</th>
+                    <th>Asistencia</th>
+                    <th>Acción</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for inscripcion in inscripciones %}
+                <tr>
+                    <td>{{ inscripcion.get_nombre_completo }}</td>
+                    <td><span class="badge badge-success">{{ inscripcion.get_estado_display }}</span></td>
+                    <td>
+                        {% if inscripcion.asistencias.exists %}
+                            <span class="badge badge-success">✓ Registrada</span>
+                        {% else %}
+                            <span class="badge badge-secondary">Pendiente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <form method="post" action="{% url 'asistencias:registrar' inscripcion.pk %}" style="margin: 0;">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-primary" style="font-size: 0.875rem; padding: 0.25rem 0.5rem;">
+                                Marcar Asistencia
+                            </button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% else %}
+        <div class="alert alert-info">
+            No hay inscritos confirmados para este evento.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+

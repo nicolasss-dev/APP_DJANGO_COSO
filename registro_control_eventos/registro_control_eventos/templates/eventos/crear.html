@@ -1,0 +1,209 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Creación de Nuevo Evento - PRCE{% endblock %}
+
+{% block page_title %}
+<h2 style="text-align: center; padding: 2rem 0; background-color: #f5f5f5; margin: -2rem -1rem 2rem;">
+    Creación de Nuevo Evento
+</h2>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 1000px; margin: 0 auto;">
+    <div class="card-body">
+        <form method="post" enctype="multipart/form-data" data-validate>
+            {% csrf_token %}
+            
+            <!-- Información Básica -->
+            <h3 style="margin-bottom: 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #dee2e6;">
+                Información Básica
+            </h3>
+            
+            <div class="form-group">
+                <label for="id_nombre" class="form-label">Nombre del evento *</label>
+                {{ form.nombre }}
+                {% if form.nombre.errors %}
+                <span class="form-error">{{ form.nombre.errors.0 }}</span>
+                {% endif %}
+                <small class="form-help">Máximo 200 caracteres</small>
+            </div>
+            
+            <div class="form-group">
+                <label for="id_descripcion" class="form-label">Descripción *</label>
+                {{ form.descripcion }}
+                {% if form.descripcion.errors %}
+                <span class="form-error">{{ form.descripcion.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_tipo_evento" class="form-label">Tipo de Evento *</label>
+                {{ form.tipo_evento }}
+                {% if form.tipo_evento.errors %}
+                <span class="form-error">{{ form.tipo_evento.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Fechas y Horarios -->
+            <h3 style="margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #dee2e6;">
+                Fechas y Horarios
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="id_fecha_inicio" class="form-label">Fecha y Hora de Inicio *</label>
+                    {{ form.fecha_inicio }}
+                    {% if form.fecha_inicio.errors %}
+                    <span class="form-error">{{ form.fecha_inicio.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_fecha_fin" class="form-label">Fecha y Hora de Fin *</label>
+                    {{ form.fecha_fin }}
+                    {% if form.fecha_fin.errors %}
+                    <span class="form-error">{{ form.fecha_fin.errors.0 }}</span>
+                    {% endif %}
+                    <small class="form-help">Debe ser posterior a la fecha de inicio</small>
+                </div>
+            </div>
+            
+            <!-- Ubicación -->
+            <h3 style="margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #dee2e6;">
+                Ubicación
+            </h3>
+            
+            <div class="form-group">
+                <label for="id_lugar" class="form-label">Lugar *</label>
+                {{ form.lugar }}
+                {% if form.lugar.errors %}
+                <span class="form-error">{{ form.lugar.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <div class="form-group">
+                <label for="id_direccion" class="form-label">Dirección</label>
+                {{ form.direccion }}
+                {% if form.direccion.errors %}
+                <span class="form-error">{{ form.direccion.errors.0 }}</span>
+                {% endif %}
+            </div>
+            
+            <!-- Capacidad y Costo -->
+            <h3 style="margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #dee2e6;">
+                Capacidad y Costo
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="id_cupo_maximo" class="form-label">Cupo Máximo *</label>
+                    {{ form.cupo_maximo }}
+                    {% if form.cupo_maximo.errors %}
+                    <span class="form-error">{{ form.cupo_maximo.errors.0 }}</span>
+                    {% endif %}
+                    <small class="form-help">Número entero positivo</small>
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_costo" class="form-label">Costo de Inscripción *</label>
+                    {{ form.costo }}
+                    {% if form.costo.errors %}
+                    <span class="form-error">{{ form.costo.errors.0 }}</span>
+                    {% endif %}
+                    <small class="form-help">Ingrese 0 para evento gratuito</small>
+                </div>
+            </div>
+            
+            <!-- Imagen Promocional -->
+            <h3 style="margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #dee2e6;">
+                Imagen Promocional
+            </h3>
+            
+            <div class="form-group">
+                <label for="id_imagen_banner" class="form-label">Banner del Evento</label>
+                {{ form.imagen_banner }}
+                {% if form.imagen_banner.errors %}
+                <span class="form-error">{{ form.imagen_banner.errors.0 }}</span>
+                {% endif %}
+                <small class="form-help">
+                    Formatos: JPG, PNG. Tamaño máximo: 2MB. Dimensiones recomendadas: 1200x400px
+                </small>
+            </div>
+            
+            <!-- Configuraciones Adicionales -->
+            <h3 style="margin: 2rem 0 1.5rem; padding-bottom: 0.5rem; border-bottom: 2px solid #dee2e6;">
+                Configuraciones Adicionales
+            </h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <div class="form-group">
+                    <label for="id_numero_sesiones" class="form-label">Número de Sesiones *</label>
+                    {{ form.numero_sesiones }}
+                    {% if form.numero_sesiones.errors %}
+                    <span class="form-error">{{ form.numero_sesiones.errors.0 }}</span>
+                    {% endif %}
+                </div>
+                
+                <div class="form-group">
+                    <label for="id_porcentaje_asistencia_minimo" class="form-label">Asistencia Mínima para Certificado *</label>
+                    {{ form.porcentaje_asistencia_minimo }}
+                    {% if form.porcentaje_asistencia_minimo.errors %}
+                    <span class="form-error">{{ form.porcentaje_asistencia_minimo.errors.0 }}</span>
+                    {% endif %}
+                    <small class="form-help">Porcentaje (ej: 80)</small>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    {{ form.genera_certificado }}
+                    <span>Genera certificado de participación</span>
+                </label>
+            </div>
+            
+            <div class="form-group">
+                <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+                    {{ form.requiere_aprobacion }}
+                    <span>Las inscripciones requieren aprobación</span>
+                </label>
+            </div>
+            
+            <!-- Mensaje informativo -->
+            <div style="background-color: #f8f9fa; padding: 1rem; margin: 1.5rem 0; border: 1px solid #dee2e6;">
+                <p style="color: #495057; margin: 0;">
+                    Los campos marcados con * son obligatorios. Complete todos los datos para registrar el evento.
+                    El evento se creará en estado "BORRADOR" por defecto.
+                </p>
+            </div>
+            
+            <!-- Botones -->
+            <div class="d-flex justify-center" style="gap: 1rem; margin-top: 2rem;">
+                <button type="submit" class="btn btn-primary" style="min-width: 150px;">
+                    Guardar evento
+                </button>
+                <a href="{% url 'eventos:lista' %}" class="btn btn-secondary" style="min-width: 150px;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Validación de fechas
+document.querySelector('form').addEventListener('submit', function(e) {
+    const fechaInicio = new Date(document.getElementById('id_fecha_inicio').value);
+    const fechaFin = new Date(document.getElementById('id_fecha_fin').value);
+    
+    if (fechaFin && fechaInicio && fechaFin <= fechaInicio) {
+        e.preventDefault();
+        alert('La fecha de fin debe ser posterior a la fecha de inicio');
+        return false;
+    }
+});
+</script>
+{% endblock %}
+

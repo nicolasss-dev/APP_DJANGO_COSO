@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Eliminar Evento - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Eliminar Evento</h1>
+{% endblock %}
+
+{% block content %}
+<div class="card" style="max-width: 800px; margin: 0 auto;">
+    <div class="card-header" style="background-color: #e74c3c; color: white;">
+        <h2>⚠️ Confirmación de Eliminación</h2>
+    </div>
+    <div class="card-body">
+        <div class="alert alert-danger">
+            <strong>¿Está seguro de eliminar este evento?</strong>
+        </div>
+        
+        <h3 style="margin: 1.5rem 0;">{{ evento.nombre }}</h3>
+        
+        <table class="table">
+            <tr>
+                <th>Tipo:</th>
+                <td><span class="badge badge-info">{{ evento.tipo_evento }}</span></td>
+            </tr>
+            <tr>
+                <th>Fecha de inicio:</th>
+                <td>{{ evento.fecha_inicio|date:"d/m/Y H:i" }}</td>
+            </tr>
+            <tr>
+                <th>Estado:</th>
+                <td><span class="badge badge-secondary">{{ evento.get_estado_display }}</span></td>
+            </tr>
+            <tr>
+                <th>Total de inscritos:</th>
+                <td><strong>{{ evento.total_inscritos }}</strong></td>
+            </tr>
+        </table>
+        
+        {% if evento.total_inscritos > 0 %}
+        <div class="alert alert-warning">
+            <strong>Advertencia:</strong> Este evento tiene {{ evento.total_inscritos }} inscripciones. 
+            Al eliminar el evento se eliminarán en cascada:
+            <ul style="margin-top: 0.5rem;">
+                <li>Todas las inscripciones</li>
+                <li>Registros de asistencia</li>
+                <li>Pagos asociados</li>
+                <li>Certificados generados</li>
+            </ul>
+            Se enviará una notificación de cancelación a todos los inscritos.
+        </div>
+        {% endif %}
+        
+        <div style="background-color: #f8d7da; border: 1px solid #f5c6cb; padding: 1rem; margin: 1.5rem 0;">
+            <strong style="color: #721c24;">Esta acción no se puede deshacer.</strong>
+            <p style="margin: 0.5rem 0 0; color: #721c24;">
+                El evento no aparecerá en listados ni reportes después de ser eliminado.
+            </p>
+        </div>
+        
+        <form method="post" style="margin-top: 2rem;">
+            {% csrf_token %}
+            <div style="display: flex; gap: 1rem; justify-content: center;">
+                <button type="submit" class="btn btn-danger" style="min-width: 150px;">
+                    Sí, Eliminar Evento
+                </button>
+                <a href="{% url 'eventos:detalle' evento.pk %}" class="btn btn-secondary" style="min-width: 150px;">
+                    Cancelar
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}
+

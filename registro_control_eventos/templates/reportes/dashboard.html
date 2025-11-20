@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Reportes - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Panel de Reportes</h1>
+{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #3498db; font-size: 2.5rem; margin: 0;">{{ total_eventos }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Eventos Totales</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #27ae60; font-size: 2.5rem; margin: 0;">{{ eventos_activos }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Eventos Activos</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #f39c12; font-size: 2.5rem; margin: 0;">{{ total_inscripciones }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Inscripciones</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #e74c3c; font-size: 2.5rem; margin: 0;">${{ total_recaudado|floatformat:0 }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Total Recaudado</p>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h2>Reportes Disponibles</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: grid; gap: 1rem;">
+            <div class="card" style="margin: 0;">
+                <div class="card-body">
+                    <h3>Reportes de Asistencia</h3>
+                    <p>Genere reportes detallados de asistencia por evento.</p>
+                    <p style="color: #6c757d; font-size: 0.875rem;">Funcionalidad en desarrollo</p>
+                </div>
+            </div>
+            
+            <div class="card" style="margin: 0;">
+                <div class="card-body">
+                    <h3>Reportes Financieros</h3>
+                    <p>Consulte reportes financieros y de recaudación.</p>
+                    <p style="color: #6c757d; font-size: 0.875rem;">Funcionalidad en desarrollo</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+

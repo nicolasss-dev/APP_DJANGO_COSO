@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte de Asistencia - {{ evento.nombre }}{% endblock %}
+
+{% block page_title %}
+<h1>Reporte de Asistencia</h1>
+<p style="color: #6c757d;">{{ evento.nombre }}</p>
+{% endblock %}
+
+{% block content %}
+<!-- Estadísticas del evento -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #3498db; font-size: 2.5rem; margin: 0;">{{ total_inscritos }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Total Inscritos</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #27ae60; font-size: 2.5rem; margin: 0;">{{ total_asistencias }}</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Asistencias Registradas</p>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body text-center">
+            <h3 style="color: #f39c12; font-size: 2.5rem; margin: 0;">{{ porcentaje_asistencia|floatformat:1 }}%</h3>
+            <p style="color: #6c757d; margin: 0.5rem 0 0;">Porcentaje de Asistencia</p>
+        </div>
+    </div>
+</div>
+
+<!-- Opciones de exportación -->
+<div class="card" style="margin-bottom: 2rem;">
+    <div class="card-header">
+        <h2>Exportar Reporte</h2>
+    </div>
+    <div class="card-body">
+        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href="{% url 'reportes:exportar_pdf' evento.id %}" class="btn btn-primary">
+                Exportar a PDF
+            </a>
+            <a href="{% url 'reportes:exportar_excel' evento.id %}" class="btn btn-secondary">
+                Exportar a Excel
+            </a>
+            <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline">
+                Volver a Reportes
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Lista de inscritos -->
+<div class="card">
+    <div class="card-header">
+        <h2>Lista de Inscritos</h2>
+    </div>
+    <div class="card-body">
+        {% if inscripciones %}
+        <div class="table">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Nombre Completo</th>
+                        <th>Documento</th>
+                        <th>Email</th>
+                        <th>Teléfono</th>
+                        <th>Asistencias</th>
+                        <th>Porcentaje</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for inscripcion in inscripciones %}
+                    <tr>
+                        <td>{{ inscripcion.usuario.get_full_name|default:inscripcion.usuario.username }}</td>
+                        <td>{{ inscripcion.usuario.documento }}</td>
+                        <td>{{ inscripcion.usuario.email }}</td>
+                        <td>{{ inscripcion.usuario.telefono|default:"-" }}</td>
+                        <td>{{ inscripcion.asistencias.count }}</td>
+                        <td>{{ inscripcion.porcentaje_asistencia|floatformat:1 }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p style="color: #6c757d; text-align: center; padding: 2rem;">
+            No hay inscripciones confirmadas para este evento
+        </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
