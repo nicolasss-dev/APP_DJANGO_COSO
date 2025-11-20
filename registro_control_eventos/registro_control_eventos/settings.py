@@ -232,5 +232,9 @@ LOGGING = {
             'level': 'INFO',
             'propagate': True,
         },
+        '': {  # Root logger
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
+        },
     },
 }

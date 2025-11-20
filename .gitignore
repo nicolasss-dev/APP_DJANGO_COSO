@@ -1,12 +1,57 @@
-venv/
-.env
+# Python
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*$py.class
+*.so
+.Python
+
+# Virtual Environment
+venv/
+env/
+ENV/
+
+# Django
 *.log
-*.sqlite3
-registro_control_eventos/db.sqlite3
-registro_control_eventos/logs/
-registro_control_eventos/staticfiles/
-registro_control_eventos/media/
+*.pot
+*.pyc
+db.sqlite3
+db.sqlite3-journal
+/media
+/staticfiles
+/static_root
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
 .cursor/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project specific
+registro_control_eventos/db.sqlite3
+registro_control_eventos/logs/*.log
+registro_control_eventos/staticfiles/
+registro_control_eventos/media/eventos/
+registro_control_eventos/media/certificados/
+registro_control_eventos/media/pagos/
+!registro_control_eventos/media/.gitkeep
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+.tox/
+
+# Deployment
+.vercel/
+*.pid

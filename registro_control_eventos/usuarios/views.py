@@ -14,6 +14,11 @@ from .models import Usuario, HistorialCambioRol
 from .forms import LoginForm, UsuarioForm, PerfilForm, RegistroPublicoForm, RecuperarPasswordForm
 
 
+import logging
+from django.utils.http import url_has_allowed_host_and_scheme
+
+logger = logging.getLogger(__name__)
+
 def login_view(request):
     """
     Vista de inicio de sesión (HU-04)
@@ -43,12 +48,14 @@ def login_view(request):
                 # Verificar si puede iniciar sesión (HU-04: cuenta activa y no bloqueada)
                 if not user.puede_iniciar_sesion():
                     if user.esta_bloqueado():
+                        logger.warning(f'Intento de login de usuario bloqueado: {username}')
                         messages.error(
                             request,
                             'Su cuenta ha sido bloqueada temporalmente por múltiples intentos fallidos. '
                             'Por favor intente nuevamente en 15 minutos.'
                         )
                     else:
+                        logger.warning(f'Intento de login de usuario desactivado: {username}')
                         messages.error(
                             request,
                             'Su cuenta ha sido desactivada. Contacte al administrador.'
@@ -57,6 +64,7 @@ def login_view(request):
                 
                 # Login exitoso
                 login(request, user)
+                logger.info(f'Login exitoso: {user.username}')
                 
                 # Configurar sesión según "Recordarme"
                 if remember_me:
@@ -69,11 +77,18 @@ def login_view(request):
                 
                 messages.success(request, f'Bienvenido, {user.get_full_name() or user.username}!')
                 
-                # Redirigir según rol
-                next_url = request.GET.get('next', 'dashboard:index')
-                return redirect(next_url)
+                # Redirigir según rol de forma segura
+                next_url = request.GET.get('next')
+                if next_url and url_has_allowed_host_and_scheme(
+                    url=next_url,
+                    allowed_hosts={request.get_host()},
+                    require_https=request.is_secure()
+                ):
+                    return redirect(next_url)
+                return redirect('dashboard:index')
             else:
                 # Credenciales inválidas
+                logger.warning(f'Login fallido para: {username}')
                 # Intentar encontrar el usuario para incrementar intentos fallidos
                 try:
                     user = Usuario.objects.get(username=username)
