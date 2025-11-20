@@ -52,31 +52,32 @@ class PaymentSimulationTest(TestCase):
         MetodoPago.objects.create(nombre='Pasarela', codigo='PASARELA', activo=True)
 
     def test_payment_flow_integration(self):
-        # 1. Register user
-        Inscripcion.objects.create(
-            evento=self.evento,
-            usuario=self.user,
-            nombre='Test',
-            apellido='User',
-            documento='1111111111',
-            correo='user@test.com',
-            telefono='1234567890',
-            estado='PENDIENTE'
-        )
-        inscripcion = Inscripcion.objects.get(correo='user@test.com')
-        
+        # 1. Register user (Simulate form submission)
+        url_registro = reverse('inscripciones:registro_publico_evento', args=[self.evento.pk])
         self.client.login(username='user', password='password')
         
-        # 2. Check confirmation page has "Pay Now" button
-        url_confirmacion = reverse('inscripciones:confirmacion_inscripcion', args=[inscripcion.pk])
-        response = self.client.get(url_confirmacion)
-        self.assertContains(response, 'Pagar Ahora')
-        self.assertContains(response, reverse('pagos:seleccionar_metodo', args=[inscripcion.pk]))
+        # Initial GET to check form
+        response = self.client.get(url_registro)
+        self.assertEqual(response.status_code, 200)
         
-        # 3. Go to payment method selection
+        # POST to register
+        data_registro = {
+            'nombre': 'Test',
+            'apellido': 'User',
+            'documento': '1111111111',
+            'correo': 'user@test.com',
+            'telefono': '1234567890',
+            'tipo_asistente': 'ESTUDIANTE'
+        }
+        response = self.client.post(url_registro, data_registro)
+        
+        # Should redirect to payment selection (NOT confirmation)
+        inscripcion = Inscripcion.objects.get(correo='user@test.com')
+        self.assertRedirects(response, reverse('pagos:seleccionar_metodo', args=[inscripcion.pk]))
+        
+        # 2. Check payment selection page
         url_seleccion = reverse('pagos:seleccionar_metodo', args=[inscripcion.pk])
         response = self.client.get(url_seleccion)
-        self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Tarjeta')
         
         # 4. Select Card Payment
@@ -96,10 +97,10 @@ class PaymentSimulationTest(TestCase):
         }
         response = self.client.post(url_pago_tarjeta, data)
         
-        # Should redirect to confirmation
+        # Should redirect to inscription confirmation
         if response.status_code != 302:
             print("Form Errors:", response.context['form'].errors)
-        self.assertEqual(response.status_code, 302)
+        self.assertRedirects(response, reverse('inscripciones:confirmacion_inscripcion', args=[inscripcion.pk]))
         
         # 6. Verify Payment Created and Registration Confirmed
         pago = Pago.objects.get(inscripcion=inscripcion)

@@ -124,7 +124,7 @@ def procesar_pago_efectivo(request, inscripcion_id):
             pago.enviar_notificacion_confirmacion()
             
             messages.success(request, '✓ Pago en efectivo registrado exitosamente')
-            return redirect('pagos:confirmacion', pago_id=pago.id)
+            return redirect('inscripciones:confirmacion_inscripcion', pk=inscripcion.pk)
     else:
         form = PagoEfectivoForm(initial={'monto': inscripcion.evento.costo})
     
@@ -203,7 +203,7 @@ def procesar_pago_tarjeta(request, inscripcion_id):
             pago.enviar_notificacion_confirmacion()
             
             messages.success(request, '✓ Pago con tarjeta procesado exitosamente')
-            return redirect('pagos:confirmacion', pago_id=pago.id)
+            return redirect('inscripciones:confirmacion_inscripcion', pk=inscripcion.pk)
     else:
         form = PagoTarjetaForm(initial={'monto': inscripcion.evento.costo})
     
@@ -293,12 +293,12 @@ def callback_pasarela(request, pago_id):
         pago.enviar_notificacion_confirmacion()
         
         messages.success(request, '✓ ¡Pago procesado exitosamente!')
+        return redirect('inscripciones:confirmacion_inscripcion', pk=pago.inscripcion.pk)
     else:
         pago.estado = 'RECHAZADO'
         pago.save()
         messages.error(request, '✗ El pago fue rechazado. Intente nuevamente.')
-    
-    return redirect('pagos:confirmacion', pago_id=pago.id)
+        return redirect('pagos:confirmacion', pago_id=pago.id)
 
 
 @login_required

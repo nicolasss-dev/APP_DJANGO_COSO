@@ -6,7 +6,7 @@ Placeholder - Implementar según necesidades
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
-from django.db import transaction
+from django.db import transaction, models
 from django.utils import timezone
 
 from eventos.models import Evento
@@ -157,6 +157,10 @@ def registro_publico_evento(request, evento_id):
 
     if request.method == 'POST':
         if inscripcion_existente:
+             if inscripcion_existente.estado == 'PENDIENTE' and not evento.es_gratuito:
+                 messages.info(request, 'Ya tienes una inscripción pendiente. Por favor completa el pago.')
+                 return redirect('pagos:seleccionar_metodo', inscripcion_id=inscripcion_existente.pk)
+             
              messages.warning(request, f'Ya te encuentras registrado en este evento con estado: {inscripcion_existente.get_estado_display()}')
              return redirect('inscripciones:detalle', pk=inscripcion_existente.pk)
 
@@ -201,19 +205,15 @@ def registro_publico_evento(request, evento_id):
                             f'¡Inscripción confirmada exitosamente! '
                             f'Se ha enviado un correo de confirmación a {inscripcion.correo}'
                         )
+                        # Redirigir a página de confirmación
+                        return redirect('inscripciones:confirmacion_inscripcion', pk=inscripcion.pk)
                     else:
-                        messages.success(
+                        messages.info(
                             request,
-                            f'¡Inscripción registrada! Su inscripción está en estado PENDIENTE. '
-                            f'Complete el pago para confirmar su cupo. '
-                            f'Se ha enviado un correo con las instrucciones a {inscripcion.correo}'
+                            f'¡Inscripción iniciada! Para confirmar su cupo, por favor realice el pago.'
                         )
-                    
-                    # TODO: Generar código QR (HU-17)
-                    # TODO: Enviar correo de confirmación (HU-21)
-                    
-                    # Redirigir a página de confirmación
-                    return redirect('inscripciones:confirmacion_inscripcion', pk=inscripcion.pk)
+                        # Redirigir a selección de método de pago
+                        return redirect('pagos:seleccionar_metodo', inscripcion_id=inscripcion.pk)
                     
             except Exception as e:
                 # Log detallado del error
@@ -226,6 +226,22 @@ def registro_publico_evento(request, evento_id):
                 # Mensaje de error más específico
                 error_msg = str(e)
                 if 'documento' in error_msg.lower() or 'unique' in error_msg.lower():
+                    # Intentar buscar la inscripción existente para redirigir
+                    documento = form.cleaned_data.get('documento')
+                    email = form.cleaned_data.get('correo')
+                    
+                    inscripcion_dup = Inscripcion.objects.filter(
+                        evento=evento,
+                        documento=documento
+                    ).first()
+                    
+                    if inscripcion_dup:
+                        if inscripcion_dup.estado == 'PENDIENTE' and not evento.es_gratuito:
+                            messages.info(request, 'Ya existe una inscripción con este documento. Por favor completa el pago.')
+                            return redirect('pagos:seleccionar_metodo', inscripcion_id=inscripcion_dup.pk)
+                        elif request.user.is_authenticated and inscripcion_dup.usuario == request.user:
+                             return redirect('inscripciones:detalle', pk=inscripcion_dup.pk)
+                    
                     messages.error(request, 'Ya existe una inscripción con este documento o correo para este evento.')
                 elif 'cupo' in error_msg.lower() or 'lleno' in error_msg.lower():
                     messages.error(request, 'El evento ya no tiene cupos disponibles.')
@@ -239,6 +255,24 @@ def registro_publico_evento(request, evento_id):
             # Mostrar errores del formulario de forma más clara
             for field, errors in form.errors.items():
                 for error in errors:
+                    # Check if error is about duplicate registration
+                    if 'Ya se encuentra inscrito' in error or 'Ya existe una inscripción' in error:
+                        documento = form.data.get('documento')
+                        email = form.data.get('correo')
+                        
+                        inscripcion_dup = Inscripcion.objects.filter(
+                            evento=evento
+                        ).filter(
+                            models.Q(documento=documento) | models.Q(correo=email)
+                        ).first()
+                        
+                        if inscripcion_dup:
+                            if inscripcion_dup.estado == 'PENDIENTE' and not evento.es_gratuito:
+                                messages.info(request, 'Ya existe una inscripción con este documento/correo. Por favor completa el pago.')
+                                return redirect('pagos:seleccionar_metodo', inscripcion_id=inscripcion_dup.pk)
+                            elif request.user.is_authenticated and inscripcion_dup.usuario == request.user:
+                                 return redirect('inscripciones:detalle', pk=inscripcion_dup.pk)
+
                     if field == '__all__':
                         messages.error(request, error)
                     else:
