@@ -1,0 +1,69 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Enviar Notificación - PRCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/simulaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <h2 class="mb-4">📧 Enviar Notificación Manual</h2>
+            
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" id="notificationForm">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.destinatario_email.id_for_label }}" class="form-label">Correo del Destinatario</label>
+                            {{ form.destinatario_email }}
+                            {% if form.destinatario_email.errors %}
+                            <div class="invalid-feedback d-block">{{ form.destinatario_email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.asunto.id_for_label }}" class="form-label">Asunto</label>
+                            {{ form.asunto }}
+                            {% if form.asunto.errors %}
+                            <div class="invalid-feedback d-block">{{ form.asunto.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.mensaje.id_for_label }}" class="form-label">Mensaje</label>
+                            {{ form.mensaje }}
+                            <small class="text-muted">Escriba el mensaje que desea enviar</small>
+                            {% if form.mensaje.errors %}
+                            <div class="invalid-feedback d-block">{{ form.mensaje.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="alert alert-info">
+                            <i class="fas fa-info-circle"></i>
+                            <strong>Sistema Simulado:</strong> El correo no se enviará realmente, pero se registrará como enviado en el sistema.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-paper-plane"></i> Enviar Notificación
+                            </button>
+                            <a href="{% url 'notificaciones:lista' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Volver
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/simulaciones.js' %}"></script>
+{% endblock %}

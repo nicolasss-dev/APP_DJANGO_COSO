@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Det alles de Notificación - PRCE{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <h2 class="mb-4">📄 Detalles de la Notificación</h2>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Información General</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Tipo:</strong> {{ notificacion.tipo_notificacion.nombre }}</p>
+                            <p><strong>Estado:</strong> 
+                                <span class="badge {% if notificacion.estado == 'ENVIADO' %}bg-success{% elif notificacion.estado == 'PENDIENTE' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ notificacion.get_estado_display }}
+                                </span>
+                            </p>
+                           <p><strong>Fecha Programada:</strong> {{ notificacion.fecha_programada|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            {% if notificacion.fecha_envio %}
+                            <p><strong>Fecha de Envío:</strong> {{ notificacion.fecha_envio|date:"d/m/Y H:i" }}</p>
+                            {% endif %}
+                            <p><strong>Intentos:</strong> {{ notificacion.intentos }}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Destinatario</h5>
+                </div>
+                <div class="card-body">
+                    {% if notificacion.destinatario_nombre %}
+                    <p><strong>Nombre:</strong> {{ notificacion.destinatario_nombre }}</p>
+                    {% endif %}
+                    <p><strong>Correo:</strong> {{ notificacion.destinatario_email }}</p>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Contenido</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Asunto:</strong></p>
+                    <div class="alert alert-secondary">{{ notificacion.asunto }}</div>
+                    
+                    <p><strong>Cuerpo:</strong></p>
+                    <div class="border p-3 rounded" style="background-color: #f8f9fa;">
+                        {{ notificacion.cuerpo|linebreaks }}
+                    </div>
+                </div>
+            </div>
+
+            {% if notificacion.evento %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Evento Asociado</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Nombre:</strong> {{ notificacion.evento.nombre }}</p>
+                    <p><strong>Fecha:</strong> {{ notificacion.evento.fecha_inicio|date:"d/m/Y" }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if notificacion.error_mensaje %}
+            <div class="card mb-4 border-danger">
+                <div class="card-header bg-danger text-white">
+                    <h5 class="mb-0">Error</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="mb-0">{{ notificacion.error_mensaje }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-grid gap-2">
+                <a href="{% url 'notificaciones:lista' %}" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i> Volver a la Lista
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

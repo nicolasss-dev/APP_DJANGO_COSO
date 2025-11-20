@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Seleccionar Método de Pago - PRCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/simulaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <h2 class="mb-4">💳 Seleccionar Método de Pago</h2>
+            
+            <!-- Resumen de Inscripción -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Resumen de la Inscripción</h5>
+                    <div class="row">
+                        <div class="col-md-8">
+                            <p class="mb-1"><strong>Evento:</strong> {{ inscripcion.evento.nombre }}</p>
+                            <p class="mb-1"><strong>Participante:</strong> {{ inscripcion.get_nombre_completo }}</p>
+                            <p class="mb-0"><strong>Correo:</strong> {{ inscripcion.correo }}</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <h3 class="text-primary mb-0">${{ monto|floatformat:2 }}</h3>
+                            <small class="text-muted">Monto a pagar</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <h4 class="mb-3">Elige tu método de pago</h4>
+            
+            <!-- Métodos de Pago -->
+            <div class="payment-methods-grid">
+                {% for metodo in metodos_pago %}
+                <div class="payment-method-card {% if metodo.codigo == 'TARJETA' %}recommended{% endif %}"
+                     data-payment-url="{% url 'pagos:pagar_'|add:metodo.codigo|lower inscripcion.id %}">
+                    <div class="payment-method-icon">
+                        {% if metodo.codigo == 'EFECTIVO' %}
+                            💵
+                        {% elif metodo.codigo == 'TRANSFERENCIA' %}
+                            🏦
+                        {% elif metodo.codigo == 'TARJETA' %}
+                            💳
+                        {% elif metodo.codigo == 'PASARELA' %}
+                            🌐
+                        {% endif %}
+                    </div>
+                    <h5 class="payment-method-title">{{ metodo.nombre }}</h5>
+                    <p class="payment-method-description">{{ metodo.descripcion }}</p>
+                    {% if not metodo.activo %}
+                    <small class="text-muted">No disponible</small>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="alert alert-info mt-4">
+                <i class="fas fa-info-circle"></i>
+                <strong>Nota:</strong> Este es un sistema de pagos simulado. Los pagos no se procesarán realmente.
+            </div>
+
+            <div class="text-center mt-4">
+                <a href="{% url 'inscripciones:lista' %}" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a Inscripciones
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/simulaciones.js' %}"></script>
+{% endblock %}

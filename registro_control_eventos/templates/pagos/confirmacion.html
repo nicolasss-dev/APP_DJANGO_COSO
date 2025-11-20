@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Confirmación de Pago - PRCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/simulaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="confirmation-container">
+        {% if pago.estado == 'COMPLETADO' %}
+        <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1 class="confirmation-title">¡Pago Exitoso!</h1>
+        <p class="confirmation-subtitle">
+            Tu pago ha sido procesado correctamente
+        </p>
+        {% elif pago.estado == 'PENDIENTE' %}
+        <div class="confirmation-icon" style="color: #ffc107;">
+            <i class="fas fa-clock"></i>
+        </div>
+        <h1 class="confirmation-title">Pago Pendiente</h1>
+        <p class="confirmation-subtitle">
+            Tu pago está en revisión y será confirmado pronto
+        </p>
+        {% else %}
+        <div class="confirmation-icon error">
+            <i class="fas fa-times-circle"></i>
+        </div>
+        <h1 class="confirmation-title">Pago Rechazado</h1>
+        <p class="confirmation-subtitle">
+            Hubo un problema al procesar tu pago
+        </p>
+        {% endif %}
+
+        <div class="confirmation-details">
+            <h5 class="mb-3">Detalles del Pago</h5>
+            
+            <div class="detail-row">
+                <span class="detail-label">Número de Referencia:</span>
+                <span class="detail-value"><strong>{{ pago.referencia }}</strong></span>
+            </div>
+            
+            {% if pago.pasarela_transaccion_id %}
+            <div class="detail-row">
+                <span class="detail-label">ID de Transacción:</span>
+                <span class="detail-value">{{ pago.pasarela_transaccion_id }}</span>
+            </div>
+            {% endif %}
+            
+            <div class="detail-row">
+                <span class="detail-label">Fecha:</span>
+                <span class="detail-value">{{ pago.fecha_pago|date:"d/m/Y H:i" }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Método de Pago:</span>
+                <span class="detail-value">{{ pago.metodo_pago.nombre }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Monto:</span>
+                <span class="detail-value"><h4 class="mb-0 text-primary">${{ pago.monto|floatformat:2 }}</h4></span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Estado:</span>
+                <span class="detail-value">
+                    <span class="badge {% if pago.estado == 'COMPLETADO' %}bg-success{% elif pago.estado == 'PENDIENTE' %}bg-warning{% else %}bg-danger{% endif %}">
+                        {{ pago.get_estado_display }}
+                    </span>
+                </span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Evento:</span>
+                <span class="detail-value">{{ pago.inscripcion.evento.nombre }}</span>
+            </div>
+            
+            <div class="detail-row">
+                <span class="detail-label">Participante:</span>
+                <span class="detail-value">{{ pago.inscripcion.get_nombre_completo }}</span>
+            </div>
+        </div>
+
+        {% if pago.estado == 'COMPLETADO' %}
+        <div class="alert alert-success">
+            <i class="fas fa-envelope"></i>
+            Se ha enviado un correo de confirmación a <strong>{{ pago.inscripcion.correo }}</strong>
+        </div>
+        {% endif %}
+
+        <div class="d-grid gap-2 col-md-6 mx-auto">
+            <a href="{% url 'inscripciones:lista' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-list"></i> Ver Mis Inscripciones
+            </a>
+            <a href="{% url 'eventos:lista' %}" class="btn btn-outline-secondary">
+                <i class="fas fa-calendar"></i> Ver Más Eventos
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/simulaciones.js' %}"></script>
+{% endblock %}

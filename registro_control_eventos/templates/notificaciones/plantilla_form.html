@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{% if modo == 'crear' %}Nueva Plantilla{% else %}Editar Plantilla{% endif %} - PRCE{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-10 offset-lg-1">
+            <h2 class="mb-4">{% if modo == 'crear' %}📝 Nueva Plantilla de Correo{% else %}✏️ Editar Plantilla{% endif %}</h2>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Variables disponibles:</strong> Puede usar variables como <code>{{nombre}}</code>, <code>{{evento.nombre}}</code>, <code>{{fecha}}</code>, etc.
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.tipo_notificacion.id_for_label }}" class="form-label">Tipo de Notificación *</label>
+                                {{ form.tipo_notificacion }}
+                                {% if form.tipo_notificacion.errors %}
+                                <div class="invalid-feedback d-block">{{ form.tipo_notificacion.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.nombre.id_for_label }}" class="form-label">Nombre de la Plantilla *</label>
+                                {{ form.nombre }}
+                                {% if form.nombre.errors %}
+                                <div class="invalid-feedback d-block">{{ form.nombre.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.asunto.id_for_label }}" class="form-label">Asunto del Correo *</label>
+                            {{ form.asunto }}
+                            <small class="text-muted">Puede usar variables como: {{evento.nombre}}, {{nombre}}</small>
+                            {% if form.asunto.errors %}
+                            <div class="invalid-feedback d-block">{{ form.asunto.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.cuerpo_texto.id_for_label }}" class="form-label">Cuerpo (Texto Plano) *</label>
+                            {{ form.cuerpo_texto }}
+                            <small class="text-muted">Versión en texto plano del correo</small>
+                            {% if form.cuerpo_texto.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cuerpo_texto.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.cuerpo_html.id_for_label %}" class="form-label">Cuerpo (HTML)</label>
+                            {{ form.cuerpo_html }}
+                            <small class="text-muted">Opcional: Versión HTML del correo para mejor presentación</small>
+                            {% if form.cuerpo_html.errors %}
+                            <div class="invalid-feedback d-block">{{ form.cuerpo_html.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.pie_pagina.id_for_label }}" class="form-label">Pie de Página</label>
+                                {{ form.pie_pagina }}
+                                {% if form.pie_pagina.errors %}
+                                <div class="invalid-feedback d-block">{{ form.pie_pagina.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.variables_disponibles.id_for_label }}" class="form-label">Variables Documentadas</label>
+                                {{ form.variables_disponibles }}
+                                <small class="text-muted">Documenta las variables disponibles</small>
+                                {% if form.variables_disponibles.errors %}
+                                <div class="invalid-feedback d-block">{{ form.variables_disponibles.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-4">
+                            <div class="form-check">
+                                {{ form.activa }}
+                                <label class="form-check-label" for="{{ form.activa.id_for_label }}">
+                                    Plantilla Activa
+                                </label>
+                                <small class="form-text text-muted d-block">Si activa esta plantilla, se usará por defecto para este tipo de notificación</small>
+                            </div>
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-save"></i> {{ modo|title }} Plantilla
+                            </button>
+                            <a href="{% url 'notificaciones:plantillas' %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cancelar
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

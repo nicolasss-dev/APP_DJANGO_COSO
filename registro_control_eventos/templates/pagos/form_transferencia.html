@@ -1,0 +1,110 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Pago por Transferencia - PRCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/simulaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <h2 class="mb-4">🏦 Pago por Transferencia Bancaria</h2>
+            
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle"></i>
+                <strong>Datos Bancarios:</strong><br>
+                Banco: Banco Simulado<br>
+                Cuenta: 1234567890<br>
+                Titular: Plataforma de Eventos<br>
+                Tipo: Ahorros
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-body">
+                    <h5>Resumen del Pago</h5>
+                    <p class="mb-1"><strong>Evento:</strong> {{ inscripcion.evento.nombre }}</p>
+                    <p class="mb-1"><strong>Participante:</strong> {{ inscripcion.get_nombre_completo }}</p>
+                    <h3 class="text-primary mt-3">${{ monto|floatformat:2 }}</h3>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <form method="post" enctype="multipart/form-data" class="needs-validation" novalidate>
+                        {% csrf_token %}
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.banco_origen.id_for_label }}" class="form-label">Banco de Origen</label>
+                                {{ form.banco_origen }}
+                                {% if form.banco_origen.errors %}
+                                <div class="invalid-feedback d-block">{{ form.banco_origen.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label for="{{ form.numero_comprobante.id_for_label }}" class="form-label">Número de Comprobante</label>
+                                {{ form.numero_comprobante }}
+                                {% if form.numero_comprobante.errors %}
+                                <div class="invalid-feedback d-block">{{ form.numero_comprobante.errors.0 }}</div>
+                                {% endif %}
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.fecha_transferencia.id_for_label }}" class="form-label">Fecha de Transferencia</label>
+                            {{ form.fecha_transferencia }}
+                            {% if form.fecha_transferencia.errors %}
+                            <div class="invalid-feedback d-block">{{ form.fecha_transferencia.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.monto.id_for_label }}" class="form-label">Monto Transferido</label>
+                            {{ form.monto }}
+                            {% if form.monto.errors %}
+                            <div class="invalid-feedback d-block">{{ form.monto.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.comprobante.id_for_label }}" class="form-label">Comprobante (Imagen/PDF)</label>
+                            {{ form.comprobante }}
+                            <small class="form-text text-muted">Suba una imagen o PDF del comprobante</small>
+                            {% if form.comprobante.errors %}
+                            <div class="invalid-feedback d-block">{{ form.comprobante.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-4">
+                            <label for="{{ form.notas.id_for_label }}" class="form-label">Notas (Opcional)</label>
+                            {{ form.notas }}
+                        </div>
+
+                        <div class="alert alert-warning">
+                            <i class="fas fa-exclamation-triangle"></i>
+                            <strong>Sistema Simulado:</strong> El comprobante será revisado. Su inscripción quedará PENDIENTE hasta la confirmación.
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary btn-lg">
+                                <i class="fas fa-upload"></i> Enviar Comprobante - ${{ monto|floatformat:2 }}
+                            </button>
+                            <a href="{% url 'pagos:seleccionar_metodo' inscripcion.id %}" class="btn btn-outline-secondary">
+                                <i class="fas fa-arrow-left"></i> Cambiar Método
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/simulaciones.js' %}"></script>
+{% endblock %}

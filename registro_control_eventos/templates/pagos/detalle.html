@@ -1,0 +1,103 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Detalles del Pago - PRCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/simulaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container mt-4 mb-5">
+    <div class="row">
+        <div class="col-lg-8 offset-lg-2">
+            <h2 class="mb-4">📄 Detalles del Pago</h2>
+            
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Información General</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p><strong>Referencia:</strong> {{ pago.referencia }}</p>
+                            <p><strong>Método:</strong> {{ pago.metodo_pago.nombre }}</p>
+                            <p><strong>Fecha:</strong> {{ pago.fecha_pago|date:"d/m/Y H:i" }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p><strong>Estado:</strong> 
+                                <span class="badge {% if pago.estado == 'COMPLETADO' %}bg-success{% elif pago.estado == 'PENDIENTE' %}bg-warning{% else %}bg-danger{% endif %}">
+                                    {{ pago.get_estado_display }}
+                                </span>
+                            </p>
+                            <p><strong>Monto:</strong> <span class="h4 text-primary">${{ pago.monto|floatformat:2 }}</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Inscripción Asociada</h5>
+                </div>
+                <div class="card-body">
+                    <p><strong>Evento:</strong> {{ pago.inscripcion.evento.nombre }}</p>
+                    <p><strong>Participante:</strong> {{ pago.inscripcion.get_nombre_completo }}</p>
+                    <p><strong>Correo:</strong> {{ pago.inscripcion.correo }}</p>
+                    <p><strong>Estado Inscripción:</strong> 
+                        <span class="badge bg-{% if pago.inscripcion.estado == 'CONFIRMADA' %}success{% else %}warning{% endif %}">
+                            {{ pago.inscripcion.get_estado_display }}
+                        </span>
+                    </p>
+                </div>
+            </div>
+
+            {% if pago.datos_pago %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Detalles del Método de Pago</h5>
+                </div>
+                <div class="card-body">
+                    <pre class="mb-0">{{ pago.datos_pago }}</pre>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if pago.comprobante %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Comprobante</h5>
+                </div>
+                <div class="card-body">
+                    <a href="{{ pago.comprobante.url }}" target="_blank" class="btn btn-outline-primary">
+                        <i class="fas fa-download"></i> Descargar Comprobante
+                    </a>
+                </div>
+            </div>
+            {% endif %}
+
+            {% if pago.notas %}
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Notas</h5>
+                </div>
+                <div class="card-body">
+                    <p class="mb-0">{{ pago.notas }}</p>
+                </div>
+            </div>
+            {% endif %}
+
+            <div class="d-grid gap-2">
+                <a href="{% url 'inscripciones:lista' %}" class=" btn btn-primary">
+                    <i class="fas fa-list"></i> Volver a Inscripciones
+                </a>
+                {% if pago.estado == 'PENDIENTE' and request.user.puede_gestionar_eventos %}
+                <a href="{% url 'pagos:confirmar_manual' pago.id %}" class="btn btn-success">
+                    <i class="fas fa-check"></i> Confirmar Pago Manualmente
+                </a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -23,6 +23,11 @@ def dashboard_view(request):
     """
     user = request.user
     
+    # Inicializar variables para evitar errores de scope
+    proximos_eventos = []
+    eventos_disponibles = []
+    actividad_reciente = []
+    
     # Estadísticas generales
     stats = {
         'total_eventos': 0,
@@ -71,11 +76,25 @@ def dashboard_view(request):
             if promedios:
                 stats['promedio_asistencia'] = sum(promedios) / len(promedios)
         
-        # Próximos eventos
+        # Próximos eventos - CORREGIDO
         proximos_eventos = eventos_query.filter(
             fecha_inicio__gte=timezone.now(),
             estado__in=['PUBLICADO', 'EN_CURSO']
-        ).order_by('fecha_inicio')[:5]
+        ).select_related('tipo_evento', 'creado_por').order_by('fecha_inicio')[:5]
+        
+        # Actividad reciente (solo administradores)
+        if user.es_administrador():
+            # Últimas inscripciones
+            ultimas_inscripciones = Inscripcion.objects.select_related(
+                'evento', 'usuario'
+            ).order_by('-fecha_inscripcion')[:10]
+            
+            for inscripcion in ultimas_inscripciones:
+                actividad_reciente.append({
+                    'usuario': inscripcion.get_nombre_completo(),
+                    'accion': f'se inscribió a {inscripcion.evento.nombre}',
+                    'fecha': inscripcion.fecha_inscripcion
+                })
         
     else:
         # Asistente: ver solo sus propias inscripciones
@@ -89,7 +108,7 @@ def dashboard_view(request):
             Q(inscripciones__usuario=user) | Q(inscripciones__correo=user.email),
             fecha_inicio__gte=timezone.now(),
             estado__in=['PUBLICADO', 'EN_CURSO']
-        ).distinct().order_by('fecha_inicio')[:5]
+        ).distinct().select_related('tipo_evento').order_by('fecha_inicio')[:5]
         
         # Eventos disponibles para inscribirse (no inscrito aún)
         eventos_disponibles = Evento.objects.filter(
@@ -100,21 +119,6 @@ def dashboard_view(request):
         ).select_related('tipo_evento').order_by('fecha_inicio')[:10]
         
         proximos_eventos = eventos_inscritos
-    
-    # Actividad reciente (solo administradores)
-    actividad_reciente = []
-    if user.es_administrador():
-        # Últimas inscripciones
-        ultimas_inscripciones = Inscripcion.objects.select_related(
-            'evento', 'usuario'
-        ).order_by('-fecha_inscripcion')[:10]
-        
-        for inscripcion in ultimas_inscripciones:
-            actividad_reciente.append({
-                'usuario': inscripcion.get_nombre_completo(),
-                'accion': f'se inscribió a {inscripcion.evento.nombre}',
-                'fecha': inscripcion.fecha_inscripcion
-            })
     
     context = {
         'stats': stats,

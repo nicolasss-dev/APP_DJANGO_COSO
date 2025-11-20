@@ -1,0 +1,140 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Notificaciones - PRCE{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/simulaciones.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-4">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">📧 Notificaciones Enviadas</h2>
+            
+            <!-- Estadísticas -->
+            <div class="stats-grid mb-4">
+                <div class="stat-card">
+                    <div class="stat-label">Total</div>
+                    <div class="stat-value">{{ total }}</div>
+                </div>
+                <div class="stat-card success">
+                    <div class="stat-label">Enviadas</div>
+                    <div class="stat-value">{{ enviadas }}</div>
+                </div>
+                <div class="stat-card warning">
+                    <div class="stat-label">Pendientes</div>
+                    <div class="stat-value">{{ pendientes }}</div>
+                </div>
+                <div class="stat-card" style="background: linear-gradient(135deg, #ff6b6b 0%, #ee5a6f 100%);">
+                    <div class="stat-label">Errores</div>
+                    <div class="stat-value">{{ errores }}</div>
+                </div>
+            </div>
+
+            <!-- Filtros -->
+            <div class="filters-card">
+                <form method="get" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="filter-label">Estado</label>
+                        <select name="estado" class="form-control">
+                            <option value="">Todos</option>
+                            <option value="ENVIADO" {% if estado_filter == 'ENVIADO' %}selected{% endif %}>Enviado</option>
+                            <option value="PENDIENTE" {% if estado_filter == 'PENDIENTE' %}selected{% endif %}>Pendiente</option>
+                            <option value="ERROR" {% if estado_filter == 'ERROR' %}selected{% endif %}>Error</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="filter-label">Tipo</label>
+                        <select name="tipo" class="form-control">
+                            <option value="">Todos</option>
+                            {% for tipo in tipos %}
+                            <option value="{{ tipo.codigo }}" {% if tipo_filter == tipo.codigo %}selected{% endif %}>
+                                {{ tipo.nombre }}
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-4 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary me-2">
+                            <i class="fas fa-filter"></i> Filtrar
+                        </button>
+                        <a href="{% url 'notificaciones:lista' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-times"></i> Limpiar
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Acciones -->
+            <div class="mb-3">
+                <a href="{% url 'notificaciones:enviar_manual' %}" class="btn btn-success">
+                    <i class="fas fa-paper-plane"></i> Enviar Notificación
+                </a>
+                <a href="{% url 'notificaciones:plantillas' %}" class="btn btn-outline-primary">
+                    <i class="fas fa-file-alt"></i> Gestionar Plantillas
+                </a>
+            </div>
+
+            <!-- Lista de Notificaciones -->
+            <div class="card">
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Tipo</th>
+                                    <th>Destinatario</th>
+                                    <th>Asunto</th>
+                                    <th>Estado</th>
+                                    <th>Evento</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for notif in notificaciones %}
+                                <tr>
+                                    <td>{{ notif.fecha_programada|date:"d/m/Y H:i" }}</td>
+                                    <td>
+                                        <span class="badge bg-info">{{ notif.tipo_notificacion.nombre }}</span>
+                                    </td>
+                                    <td>
+                                        <div>{{ notif.destinatario_nombre|default:notif.destinatario_email }}</div>
+                                        <small class="text-muted">{{ notif.destinatario_email }}</small>
+                                    </td>
+                                    <td>{{ notif.asunto|truncatewords:10 }}</td>
+                                    <td>
+                                        <span class="badge {% if notif.estado == 'ENVIADO' %}bg-success{% elif notif.estado == 'PENDIENTE' %}bg-warning{% else %}bg-danger{% endif %}">
+                                            {{ notif.get_estado_display }}
+                                        </span>
+                                    </td>
+                                    <td>{{ notif.evento.nombre|default:"-" }}</td>
+                                    <td>
+                                        <a href="{% url 'notificaciones:detalle' notif.id %}" class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="7" class="text-center py-4">
+                                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                                        <p class="text-muted mb-0">No hay notificaciones</p>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/simulaciones.js' %}"></script>
+{% endblock %}
