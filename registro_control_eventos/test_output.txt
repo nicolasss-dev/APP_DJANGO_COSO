@@ -1,0 +1,62 @@
+Creating test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+
+Found 1 test(s).
+Operations to perform:
+  Synchronize unmigrated apps: humanize, messages, reportes, staticfiles
+  Apply all migrations: admin, asistencias, auth, certificados, contenttypes, eventos, inscripciones, notificaciones, pagos, sessions, usuarios
+Synchronizing apps without migrations:
+  Creating tables...
+    Running deferred SQL...
+Running migrations:
+  Applying contenttypes.0001_initial... OK
+  Applying contenttypes.0002_remove_content_type_name... OK
+  Applying auth.0001_initial... OK
+  Applying auth.0002_alter_permission_name_max_length... OK
+  Applying auth.0003_alter_user_email_max_length... OK
+  Applying auth.0004_alter_user_username_opts... OK
+  Applying auth.0005_alter_user_last_login_null... OK
+  Applying auth.0006_require_contenttypes_0002... OK
+  Applying auth.0007_alter_validators_add_error_messages... OK
+  Applying auth.0008_alter_user_username_max_length... OK
+  Applying auth.0009_alter_user_last_name_max_length... OK
+  Applying auth.0010_alter_group_name_max_length... OK
+  Applying auth.0011_update_proxy_permissions... OK
+  Applying auth.0012_alter_user_first_name_max_length... OK
+  Applying usuarios.0001_initial... OK
+  Applying admin.0001_initial... OK
+  Applying admin.0002_logentry_remove_auto_add... OK
+  Applying admin.0003_logentry_add_action_flag_choices... OK
+  Applying eventos.0001_initial... OK
+  Applying inscripciones.0001_initial... OK
+  Applying asistencias.0001_initial... OK
+  Applying asistencias.0002_initial... OK
+  Applying asistencias.0003_initial... OK
+  Applying certificados.0001_initial... OK
+  Applying certificados.0002_initial... OK
+  Applying certificados.0003_initial... OK
+  Applying eventos.0002_initial... OK
+  Applying inscripciones.0002_initial... OK
+  Applying notificaciones.0001_initial... OK
+  Applying notificaciones.0002_initial... OK
+  Applying pagos.0001_initial... OK
+  Applying pagos.0002_initial... OK
+test_payment_flow_integration (pagos.tests_simulation.PaymentSimulationTest.test_payment_flow_integration) ... FAIL
+
+======================================================================
+FAIL: test_payment_flow_integration (pagos.tests_simulation.PaymentSimulationTest.test_payment_flow_integration)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_simulation.py", line 80, in test_payment_flow_integration
+    self.assertContains(response, 'TARJETA')
+    ~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : Couldn't find 'TARJETA' in the following response
+b'\n<!DOCTYPE html>\n<html lang="es">\n<head>\n    <meta charset="UTF-8">\n    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n    <meta http-equiv="X-UA-Compatible" content="IE=edge">\n    \n    <!-- SEO -->\n    <title>Seleccionar M\xc3\xa9todo de Pago - PRCE</title>\n    <meta name="description" content="Sistema de gesti\xc3\xb3n integral de eventos, inscripciones y certificados">\n    \n    <!-- Accesibilidad -->\n    <meta name="theme-color" content="#2c3e50">\n    <link rel="icon" href="/static/images/favicon.ico" type="image/x-icon">\n    \n    <!-- CSS -->\n    <link rel="stylesheet" href="/static/css/main.css">\n    \n<link rel="stylesheet" href="/static/css/simulaciones.css">\n\n</head>\n<body>\n    <!-- Header -->\n    <header class="header" role="banner">\n        <div class="container">\n            <div class="d-flex justify-between align-center">\n                <div>\n                    <h1 class="header-title">\n                        <a href="/dashboard/" style="color: white; text-decoration: none;">\n                            PRCE - Sistema de Eventos\n                        </a>\n                    </h1>\n                </div>\n                \n                \n                <div style="color: white;">\n                    <span>user</span>\n                    <span class="badge badge-secondary">Asistente</span>\n                </div>\n                \n            </div>\n            \n            \n            <nav class="nav" role="navigation" aria-label="Navegaci\xc3\xb3n principal">\n                <a href="/dashboard/" class="nav-link">Dashboard</a>\n                \n                \n                \n                \n                \n                <a href="/usuarios/perfil/" class="nav-link">Mi Perfil</a>\n                <a href="/usuarios/logout/" class="nav-link">Cerrar Sesi\xc3\xb3n</a>\n            </nav>\n            \n        </div>\n    </header>\n    \n    <!-- Main Content -->\n    <main id="main-content" class="main-content" role="main">\n        <div class="container">\n            <!-- Mensajes -->\n            \n            \n            <!-- Breadcrumb -->\n            \n            \n            <!-- Page Title -->\n            \n            \n            <!-- Content -->\n            \n<div class="container mt-4 mb-5">\n    <div class="row">\n        <div class="col-lg-8 offset-lg-2">\n            <h2 class="mb-4">\xf0\x9f\x92\xb3 Seleccionar M\xc3\xa9todo de Pago</h2>\n            \n            <!-- Resumen de Inscripci\xc3\xb3n -->\n            <div class="card mb-4">\n                <div class="card-body">\n                    <h5 class="card-title">Resumen de la Inscripci\xc3\xb3n</h5>\n                    <div class="row">\n                        <div class="col-md-8">\n                            <p class="mb-1"><strong>Evento:</strong> Paid Event</p>\n                            <p class="mb-1"><strong>Participante:</strong> Test User</p>\n                            <p class="mb-0"><strong>Correo:</strong> user@test.com</p>\n                        </div>\n                        <div class="col-md-4 text-end">\n                            <h3 class="text-primary mb-0">$100,00</h3>\n                            <small class="text-muted">Monto a pagar</small>\n                        </div>\n                    </div>\n                </div>\n            </div>\n\n            <h4 class="mb-3">Elige tu m\xc3\xa9todo de pago</h4>\n            \n            <!-- M\xc3\xa9todos de Pago -->\n            <div class="payment-methods-grid">\n                \n                <div class="payment-method-card "\n                     data-payment-url="/pagos/pagar/1/pasarela/">\n                    <div class="payment-method-icon">\n                        \n                            \xf0\x9f\x8c\x90\n                        \n                    </div>\n                    <h5 class="payment-method-title">Pasarela</h5>\n                    <p class="payment-method-description"></p>\n                    \n                </div>\n                \n                <div class="payment-method-card recommended"\n                     data-payment-url="/pagos/pagar/1/tarjeta/">\n                    <div class="payment-method-icon">\n                        \n                            \xf0\x9f\x92\xb3\n                        \n                    </div>\n                    <h5 class="payment-method-title">Tarjeta</h5>\n                    <p class="payment-method-description"></p>\n                    \n                </div>\n                \n            </div>\n\n            <div class="alert alert-info mt-4">\n                <i class="fas fa-info-circle"></i>\n                <strong>Nota:</strong> Este es un sistema de pagos simulado. Los pagos no se procesar\xc3\xa1n realmente.\n            </div>\n\n            <div class="text-center mt-4">\n                <a href="/inscripciones/" class="btn btn-secondary">\n                    <i class="fas fa-arrow-left"></i> Volver a Inscripciones\n                </a>\n            </div>\n        </div>\n    </div>\n</div>\n\n        </div>\n    </main>\n    \n    <!-- Footer -->\n    <footer class="footer" role="contentinfo">\n        <div class="container">\n            <p>&copy; 2025 PRCE - Plataforma de Registro y Control de Eventos</p>\n            <p>Ingenier\xc3\xada de Requisitos</p>\n        </div>\n    </footer>\n    \n    <!-- JavaScript -->\n    <script src="/static/js/main.js"></script>\n    \n<script src="/static/js/simulaciones.js"></script>\n\n</body>\n</html>\n\n'
+
+----------------------------------------------------------------------
+Ran 1 test in 2.247s
+
+FAILED (failures=1)
+Destroying test database for alias 'default' ('file:memorydb_default?mode=memory&cache=shared')...
+
+  Applying sessions.0001_initial... OK
+System check identified no issues (0 silenced).

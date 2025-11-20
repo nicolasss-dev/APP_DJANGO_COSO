@@ -147,7 +147,19 @@ def registro_publico_evento(request, evento_id):
         messages.error(request, 'Evento sin cupos disponibles')
         return redirect('eventos:detalle', pk=evento_id)
     
+    # Verificar si el usuario ya está inscrito
+    inscripcion_existente = None
+    if request.user.is_authenticated:
+        inscripcion_existente = Inscripcion.objects.filter(
+            evento=evento,
+            usuario=request.user
+        ).first()
+
     if request.method == 'POST':
+        if inscripcion_existente:
+             messages.warning(request, f'Ya te encuentras registrado en este evento con estado: {inscripcion_existente.get_estado_display()}')
+             return redirect('inscripciones:detalle', pk=inscripcion_existente.pk)
+
         form = InscripcionPublicaForm(request.POST, evento=evento, usuario=request.user if request.user.is_authenticated else None)
         
         if form.is_valid():
@@ -237,7 +249,8 @@ def registro_publico_evento(request, evento_id):
     
     context = {
         'evento': evento,
-        'form': form
+        'form': form,
+        'inscripcion_existente': inscripcion_existente
     }
     return render(request, 'inscripciones/registro_publico_evento.html', context)
 

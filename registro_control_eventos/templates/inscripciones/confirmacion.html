@@ -124,6 +124,11 @@
                         El monto a pagar es de <strong>${{ evento.costo|floatformat:2 }}</strong>. 
                         Siga las instrucciones en el correo para confirmar su cupo.
                     </small>
+                    <div style="margin-top: 0.5rem;">
+                        <a href="{% url 'pagos:seleccionar_metodo' inscripcion.pk %}" class="btn btn-success btn-sm">
+                            <i class="fas fa-credit-card"></i> Pagar Ahora
+                        </a>
+                    </div>
                 </li>
                 {% endif %}
                 
