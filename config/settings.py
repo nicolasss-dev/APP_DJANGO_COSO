@@ -64,7 +64,7 @@ MIDDLEWARE = [
 # Modelo de usuario personalizado
 AUTH_USER_MODEL = 'usuarios.Usuario'
 
-ROOT_URLCONF = "registro_control_eventos.urls"
+ROOT_URLCONF = "config.urls"
 
 TEMPLATES = [
     {
@@ -84,7 +84,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "registro_control_eventos.wsgi.application"
+WSGI_APPLICATION = "config.wsgi.application"
 
 
 # Database
@@ -231,6 +231,10 @@ LOGGING = {
             'handlers': ['file', 'console'],
             'level': 'INFO',
             'propagate': True,
+        },
+        '': {  # Root logger
+            'handlers': ['file', 'console'],
+            'level': 'INFO',
         },
     },
 }

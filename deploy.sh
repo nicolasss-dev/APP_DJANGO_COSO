@@ -84,6 +84,6 @@ if [ "$ENVIRONMENT" = "development" ]; then
     log "  python manage.py runserver"
 else
     log "Para iniciar con Gunicorn:"
-    log "  gunicorn registro_control_eventos.wsgi:application --bind 0.0.0.0:8000"
+    log "  gunicorn config.wsgi:application --bind 0.0.0.0:8000"
 fi
 
