@@ -43,19 +43,31 @@ def reporte_asistencia(request, evento_id):
         return redirect('dashboard:index')
     
     evento = get_object_or_404(Evento, pk=evento_id)
-    inscripciones = evento.inscripciones.filter(estado='CONFIRMADA')
+    inscripciones = evento.inscripciones.filter(estado='CONFIRMADA').select_related('usuario')
     
     # Calcular estadísticas
     total_inscritos = inscripciones.count()
     total_asistencias = Asistencia.objects.filter(inscripcion__evento=evento).values('inscripcion').distinct().count()
-    porcentaje_asistencia = (total_asistencias / total_inscritos * 100) if total_inscritos > 0 else 0
+    porcentaje_asistencia_global = (total_asistencias / total_inscritos * 100) if total_inscritos > 0 else 0
+    
+    # Detalle por participante
+    participantes = []
+    for inscripcion in inscripciones:
+        asistencias_count = Asistencia.objects.filter(inscripcion=inscripcion).count()
+        porcentaje = (asistencias_count / evento.numero_sesiones * 100) if evento.numero_sesiones > 0 else 0
+        participantes.append({
+            'inscripcion': inscripcion,
+            'asistencias': asistencias_count,
+            'porcentaje': porcentaje,
+            'cumple': porcentaje >= evento.porcentaje_asistencia_minimo
+        })
     
     context = {
         'evento': evento,
-        'inscripciones': inscripciones,
         'total_inscritos': total_inscritos,
         'total_asistencias': total_asistencias,
-        'porcentaje_asistencia': porcentaje_asistencia,
+        'porcentaje_asistencia': porcentaje_asistencia_global,
+        'participantes': participantes,
     }
     
     return render(request, 'reportes/asistencia.html', context)

@@ -2,95 +2,109 @@
 
 {% block title %}Reporte de Asistencia - {{ evento.nombre }}{% endblock %}
 
-{% block page_title %}
-<h1>Reporte de Asistencia</h1>
-<p style="color: #6c757d;">{{ evento.nombre }}</p>
-{% endblock %}
-
 {% block content %}
-<!-- Estadísticas del evento -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
-    <div class="card">
-        <div class="card-body text-center">
-            <h3 style="color: #3498db; font-size: 2.5rem; margin: 0;">{{ total_inscritos }}</h3>
-            <p style="color: #6c757d; margin: 0.5rem 0 0;">Total Inscritos</p>
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2>Reporte de Asistencia: {{ evento.nombre }}</h2>
+        <div>
+            <a href="{% url 'reportes:exportar_pdf' evento.id %}" class="btn btn-danger">
+                <i class="fas fa-file-pdf"></i> Exportar PDF
+            </a>
+            <a href="{% url 'reportes:exportar_excel' evento.id %}" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Exportar Excel
+            </a>
+            <a href="{% url 'dashboard:index' %}" class="btn btn-secondary">Volver</a>
         </div>
     </div>
-    
-    <div class="card">
-        <div class="card-body text-center">
-            <h3 style="color: #27ae60; font-size: 2.5rem; margin: 0;">{{ total_asistencias }}</h3>
-            <p style="color: #6c757d; margin: 0.5rem 0 0;">Asistencias Registradas</p>
-        </div>
-    </div>
-    
-    <div class="card">
-        <div class="card-body text-center">
-            <h3 style="color: #f39c12; font-size: 2.5rem; margin: 0;">{{ porcentaje_asistencia|floatformat:1 }}%</h3>
-            <p style="color: #6c757d; margin: 0.5rem 0 0;">Porcentaje de Asistencia</p>
-        </div>
-    </div>
-</div>
 
-<!-- Opciones de exportación -->
-<div class="card" style="margin-bottom: 2rem;">
-    <div class="card-header">
-        <h2>Exportar Reporte</h2>
-    </div>
-    <div class="card-body">
-        <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
-            <a href="{% url 'reportes:exportar_pdf' evento.id %}" class="btn btn-primary">
-                Exportar a PDF
-            </a>
-            <a href="{% url 'reportes:exportar_excel' evento.id %}" class="btn btn-secondary">
-                Exportar a Excel
-            </a>
-            <a href="{% url 'reportes:dashboard' %}" class="btn btn-outline">
-                Volver a Reportes
-            </a>
+    <div class="row mb-4">
+        <div class="col-md-3">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-header">Total Inscritos</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_inscritos }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-header">Con Asistencia</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_asistencias }}</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-header">% Asistencia Global</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ porcentaje_asistencia|floatformat:1 }}%</h5>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-light mb-3">
+                <div class="card-header">Sesiones Totales</div>
+                <div class="card-body">
+                    <h5 class="card-title">{{ evento.numero_sesiones }}</h5>
+                </div>
+            </div>
         </div>
     </div>
-</div>
 
-<!-- Lista de inscritos -->
-<div class="card">
-    <div class="card-header">
-        <h2>Lista de Inscritos</h2>
-    </div>
-    <div class="card-body">
-        {% if inscripciones %}
-        <div class="table">
-            <table class="table">
-                <thead>
-                    <tr>
-                        <th>Nombre Completo</th>
-                        <th>Documento</th>
-                        <th>Email</th>
-                        <th>Teléfono</th>
-                        <th>Asistencias</th>
-                        <th>Porcentaje</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for inscripcion in inscripciones %}
-                    <tr>
-                        <td>{{ inscripcion.usuario.get_full_name|default:inscripcion.usuario.username }}</td>
-                        <td>{{ inscripcion.usuario.documento }}</td>
-                        <td>{{ inscripcion.usuario.email }}</td>
-                        <td>{{ inscripcion.usuario.telefono|default:"-" }}</td>
-                        <td>{{ inscripcion.asistencias.count }}</td>
-                        <td>{{ inscripcion.porcentaje_asistencia|floatformat:1 }}%</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+    <div class="card">
+        <div class="card-header">
+            Detalle de Participantes
         </div>
-        {% else %}
-        <p style="color: #6c757d; text-align: center; padding: 2rem;">
-            No hay inscripciones confirmadas para este evento
-        </p>
-        {% endif %}
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Participante</th>
+                            <th>Documento</th>
+                            <th>Correo</th>
+                            <th>Asistencias</th>
+                            <th>% Asistencia</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in participantes %}
+                        <tr>
+                            <td>{{ p.inscripcion.get_nombre_completo }}</td>
+                            <td>{{ p.inscripcion.documento }}</td>
+                            <td>{{ p.inscripcion.correo }}</td>
+                            <td>{{ p.asistencias }} / {{ evento.numero_sesiones }}</td>
+                            <td>
+                                <div class="progress">
+                                    <div class="progress-bar {% if p.cumple %}bg-success{% else %}bg-warning{% endif %}" 
+                                         role="progressbar" 
+                                         style="width: {{ p.porcentaje }}%" 
+                                         aria-valuenow="{{ p.porcentaje }}" 
+                                         aria-valuemin="0" 
+                                         aria-valuemax="100">
+                                        {{ p.porcentaje|floatformat:0 }}%
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                {% if p.cumple %}
+                                <span class="badge bg-success">Aprobado</span>
+                                {% else %}
+                                <span class="badge bg-warning text-dark">Pendiente</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No hay inscripciones confirmadas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
     </div>
 </div>
 {% endblock %}
-

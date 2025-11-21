@@ -22,6 +22,29 @@
                     <p>Tu inscripción se encuentra en estado: <strong>{{ inscripcion_existente.get_estado_display }}</strong></p>
                     <p>Fecha de inscripción: {{ inscripcion_existente.fecha_inscripcion|date:"d/m/Y H:i" }}</p>
                     
+                    {% if inscripcion_existente.estado == 'CONFIRMADA' and inscripcion_existente.evento.genera_certificado %}
+                        <hr>
+                        <h5><i class="fas fa-chart-line"></i> Progreso de Asistencia</h5>
+                        <div class="progress mb-2" style="height: 25px;">
+                            <div class="progress-bar {% if inscripcion_existente.porcentaje_asistencia >= inscripcion_existente.evento.porcentaje_asistencia_minimo %}bg-success{% else %}bg-warning{% endif %}" 
+                                 role="progressbar" 
+                                 style="width: {{ inscripcion_existente.porcentaje_asistencia }}%">
+                                {{ inscripcion_existente.porcentaje_asistencia|floatformat:0 }}%
+                            </div>
+                        </div>
+                        <small class="text-muted">Mínimo requerido para certificado: {{ inscripcion_existente.evento.porcentaje_asistencia_minimo }}%</small>
+                        
+                        {% if inscripcion_existente.puede_generar_certificado %}
+                            <div class="mt-3 alert alert-success">
+                                <h5><i class="fas fa-certificate"></i> Certificado Disponible</h5>
+                                <p class="mb-2">¡Felicidades! Has completado los requisitos para obtener tu certificado.</p>
+                                <a href="{% url 'certificados:generar' inscripcion_existente.pk %}" class="btn btn-success">
+                                    <i class="fas fa-award"></i> Ver mi Certificado
+                                </a>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                    
                     <div style="margin-top: 1rem;">
                         <a href="{% url 'inscripciones:detalle' pk=inscripcion_existente.pk %}" class="btn btn-primary">
                             Ver detalles de mi inscripción
@@ -171,4 +194,3 @@
     </div>
 </div>
 {% endblock %}
-

@@ -322,10 +322,15 @@ def detalle_inscripcion(request, pk):
             messages.error(request, 'No tiene permisos para ver esta inscripción')
             return redirect('inscripciones:lista')
     
+    # Obtener certificado si existe
+    from certificados.models import Certificado
+    certificado = Certificado.objects.filter(inscripcion=inscripcion).first()
+
     context = {
         'inscripcion': inscripcion,
         'evento': inscripcion.evento,
         'puede_editar': user.puede_gestionar_eventos(),
+        'certificado': certificado,
     }
     
     return render(request, 'inscripciones/detalle.html', context)

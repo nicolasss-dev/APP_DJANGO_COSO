@@ -1,0 +1,98 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Certificado - {{ certificado.inscripcion.evento.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-md-10">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>Vista Previa del Certificado</h2>
+                <div>
+                    <button onclick="window.print()" class="btn btn-primary">
+                        <i class="fas fa-print"></i> Imprimir / Guardar como PDF
+                    </button>
+                    <a href="{% url 'certificados:lista' %}" class="btn btn-secondary">Volver</a>
+                </div>
+            </div>
+
+            <!-- Certificate Container -->
+            <div class="card shadow-lg border-0" style="min-height: 600px; background: #fff; border: 10px solid #1a237e !important;">
+                <div class="card-body text-center p-5 d-flex flex-column justify-content-center align-items-center" style="background-image: url('{% static 'img/certificate-bg.png' %}'); background-size: cover;">
+                    
+                    <div class="mb-4">
+                        <i class="fas fa-award fa-5x text-warning mb-3"></i>
+                        <h1 class="display-4" style="font-family: 'Playfair Display', serif; color: #1a237e;">Certificado de Asistencia</h1>
+                    </div>
+
+                    <p class="lead mb-4">Se otorga el presente certificado a:</p>
+
+                    <h2 class="display-5 mb-4 fw-bold text-uppercase border-bottom border-2 border-dark d-inline-block px-5 pb-2">
+                        {{ certificado.inscripcion.get_nombre_completo }}
+                    </h2>
+
+                    <p class="lead mb-2">Por su participación y asistencia satisfactoria en el evento:</p>
+                    
+                    <h3 class="mb-4 text-primary">{{ certificado.inscripcion.evento.nombre }}</h3>
+
+                    <div class="row w-100 mt-4 mb-5">
+                        <div class="col-6 text-end pe-4 border-end">
+                            <p class="mb-1"><strong>Fecha de Inicio:</strong> {{ certificado.inscripcion.evento.fecha_inicio|date:"d/m/Y" }}</p>
+                            <p class="mb-0"><strong>Fecha de Finalización:</strong> {{ certificado.inscripcion.evento.fecha_fin|date:"d/m/Y" }}</p>
+                        </div>
+                        <div class="col-6 text-start ps-4">
+                            <p class="mb-1"><strong>Duración:</strong> {{ certificado.inscripcion.evento.numero_sesiones }} sesiones</p>
+                            <p class="mb-0"><strong>Código de Verificación:</strong> {{ certificado.codigo_verificacion }}</p>
+                        </div>
+                    </div>
+
+                    <div class="mt-auto pt-5 w-100 d-flex justify-content-around align-items-end">
+                        <div class="text-center">
+                            <div class="border-top border-dark pt-2 px-4" style="width: 200px;">
+                                <p class="mb-0 fw-bold">Director Académico</p>
+                            </div>
+                        </div>
+                        <div class="text-center">
+                            <img src="https://api.qrserver.com/v1/create-qr-code/?size=100x100&data={{ request.scheme }}://{{ request.get_host }}{% url 'certificados:verificar' certificado.codigo_verificacion %}" alt="QR Verificación" class="mb-2">
+                            <p class="small text-muted mb-0">Escanear para verificar</p>
+                        </div>
+                        <div class="text-center">
+                            <div class="border-top border-dark pt-2 px-4" style="width: 200px;">
+                                <p class="mb-0 fw-bold">Coordinador del Evento</p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-4 text-muted small">
+                        <p>Fecha de emisión: {{ certificado.fecha_generacion|date:"d de F de Y" }}</p>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700&display=swap');
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    .card, .card * {
+        visibility: visible;
+    }
+    .card {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        border: 5px solid #1a237e !important;
+    }
+    .btn, header, footer {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

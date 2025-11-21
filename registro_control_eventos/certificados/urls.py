@@ -10,7 +10,9 @@ app_name = 'certificados'
 urlpatterns = [
     path('', views.lista_certificados, name='lista'),
     path('generar-masivo/', views.generar_masivo, name='generar_masivo'),
+    path('generar-masivo/<int:evento_id>/', views.generar_masivo, name='generar_masivo'),
     path('generar/<int:inscripcion_id>/', views.generar_certificado, name='generar'),
+    path('descargar/<int:certificado_id>/', views.descargar_certificado, name='descargar'),
     path('enviar/<int:certificado_id>/', views.enviar_certificado, name='enviar'),
     path('verificar/<str:codigo>/', views.verificar_certificado, name='verificar'),
 ]

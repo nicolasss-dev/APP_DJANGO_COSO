@@ -111,7 +111,30 @@ def crear_evento(request):
 def detalle_evento(request, pk):
     """Detalle de evento"""
     evento = get_object_or_404(Evento, pk=pk)
-    return render(request, 'eventos/detalle.html', {'evento': evento})
+    
+    # Check if user is registered and has certificate
+    inscripcion_usuario = None
+    certificado_usuario = None
+    
+    if request.user.is_authenticated:
+        from inscripciones.models import Inscripcion
+        from certificados.models import Certificado
+        from django.db.models import Q
+        
+        inscripcion_usuario = Inscripcion.objects.filter(
+            Q(usuario=request.user) | Q(correo=request.user.email),
+            evento=evento
+        ).first()
+        
+        if inscripcion_usuario:
+            certificado_usuario = Certificado.objects.filter(inscripcion=inscripcion_usuario).first()
+    
+    return render(request, 'eventos/detalle.html', {
+        'evento': evento,
+        'inscripcion_usuario': inscripcion_usuario,
+        'certificado_usuario': certificado_usuario,
+    })
+
 
 
 @login_required

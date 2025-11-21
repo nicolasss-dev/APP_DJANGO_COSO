@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Generar Certificados - PRCE{% endblock %}
+
+{% block page_title %}
+<h1>Generación Masiva de Certificados</h1>
+{% endblock %}
+
+{% block content %}
+{% if messages %}
+<div class="container mt-3">
+    {% for message in messages %}
+    <div class="alert alert-{{ message.tags }} alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
+
+<div class="card">
+    <div class="card-header">
+        <h2>Seleccione un Evento</h2>
+    </div>
+    <div class="card-body">
+        {% if eventos %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Evento</th>
+                        <th>Fecha</th>
+                        <th>Estado</th>
+                        <th>Inscritos</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evento in eventos %}
+                    <tr>
+                        <td>{{ evento.nombre }}</td>
+                        <td>{{ evento.fecha_inicio|date:"d/m/Y" }} - {{ evento.fecha_fin|date:"d/m/Y" }}</td>
+                        <td><span class="badge bg-{{ evento.estado|lower }}">{{ evento.get_estado_display }}</span></td>
+                        <td>{{ evento.inscritos_count }}</td>
+                        <td>
+                            <a href="{% url 'certificados:generar_masivo' evento.id %}" class="btn btn-success btn-sm">
+                                <i class="fas fa-certificate"></i> Generar Certificados
+                            </a>
+                            <a href="{% url 'reportes:asistencia' evento.id %}" class="btn btn-info btn-sm">
+                                <i class="fas fa-chart-bar"></i> Ver Reporte
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            No hay eventos disponibles para generación de certificados.
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

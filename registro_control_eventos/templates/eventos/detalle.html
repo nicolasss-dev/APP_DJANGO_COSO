@@ -210,6 +210,50 @@
             </div>
         </div>
         
+        {% if inscripcion_usuario and inscripcion_usuario.estado == 'CONFIRMADA' %}
+        <div class="card">
+            <div class="card-header">
+                <h3>Mi Certificado</h3>
+            </div>
+            <div class="card-body">
+                <div style="margin-bottom: 1rem;">
+                    <strong>Progreso de Asistencia:</strong>
+                    <div class="progress mt-2" style="height: 25px;">
+                        <div class="progress-bar {% if inscripcion_usuario.porcentaje_asistencia >= evento.porcentaje_asistencia_minimo %}bg-success{% else %}bg-warning{% endif %}" 
+                             role="progressbar" 
+                             style="width: {{ inscripcion_usuario.porcentaje_asistencia }}%">
+                            {{ inscripcion_usuario.porcentaje_asistencia|floatformat:0 }}%
+                        </div>
+                    </div>
+                    <small class="text-muted mt-1 d-block">Mínimo requerido: {{ evento.porcentaje_asistencia_minimo }}%</small>
+                </div>
+                
+                {% if certificado_usuario %}
+                    <div class="alert alert-success" style="margin-bottom: 0;">
+                        <h5><i class="fas fa-check-circle"></i> Certificado Disponible</h5>
+                        <p class="mb-2">Tu certificado ha sido generado exitosamente.</p>
+                        <a href="{% url 'certificados:descargar' certificado_usuario.pk %}" class="btn btn-success btn-sm">
+                            <i class="fas fa-eye"></i> Ver mi Certificado
+                        </a>
+                    </div>
+                {% elif inscripcion_usuario.puede_generar_certificado %}
+                    <div class="alert alert-info" style="margin-bottom: 0;">
+                        <h5><i class="fas fa-award"></i> ¡Elegible para Certificado!</h5>
+                        <p class="mb-2">Has completado los requisitos de asistencia.</p>
+                        <a href="{% url 'certificados:generar' inscripcion_usuario.pk %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-certificate"></i> Generar Certificado
+                        </a>
+                    </div>
+                {% else %}
+                    <div class="alert alert-warning" style="margin-bottom: 0;">
+                        <h5><i class="fas fa-hourglass-half"></i> En Progreso</h5>
+                        <p class="mb-0">Continúa asistiendo para alcanzar el {{ evento.porcentaje_asistencia_minimo }}% requerido.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+        
         <div class="card">
             <div class="card-header">
                 <h3>Información de Auditoría</h3>
