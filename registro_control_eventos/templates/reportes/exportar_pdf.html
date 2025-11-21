@@ -1,0 +1,123 @@
+{% extends 'base.html' %}
+
+{% block title %}Reporte PDF - {{ evento.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Vista del Reporte PDF</h2>
+        <div>
+            <button onclick="window.print()" class="btn btn-primary">
+                <i class="fas fa-print"></i> Imprimir / Guardar como PDF
+            </button>
+            <a href="{% url 'reportes:asistencia' evento.id %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+
+    <div class="card" id="pdf-content" style="max-width: 900px; margin: 0 auto; background: white; padding: 40px; box-shadow: 0 0 10px rgba(0,0,0,0.1);">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 style="color: #2c3e50; font-size: 28px; margin-bottom: 10px;">Reporte de Asistencia</h1>
+            <h2 style="color: #34495e; font-size: 20px; font-weight: normal;">{{ evento.nombre }}</h2>
+            <p style="color: #7f8c8d; font-size: 14px; margin-top: 10px;">
+                Generado el {{ now|date:"d de F de Y" }} a las {{ now|time:"H:i" }}
+            </p>
+        </div>
+
+        <hr style="border-top: 2px solid #3498db; margin: 30px 0;">
+
+        <!-- Statistics Summary -->
+        <div class="row mb-4">
+            <div class="col-3 text-center">
+                <div style="padding: 15px; background: #ecf0f1; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #3498db;">{{ total_inscritos }}</div>
+                    <div style="color: #7f8c8d; font-size: 12px;">Total Inscritos</div>
+                </div>
+            </div>
+            <div class="col-3 text-center">
+                <div style="padding: 15px; background: #ecf0f1; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #27ae60;">{{ total_asistencias }}</div>
+                    <div style="color: #7f8c8d; font-size: 12px;">Con Asistencia</div>
+                </div>
+            </div>
+            <div class="col-3 text-center">
+                <div style="padding: 15px; background: #ecf0f1; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #f39c12;">{{ porcentaje_asistencia|floatformat:0 }}%</div>
+                    <div style="color: #7f8c8d; font-size: 12px;">% Global</div>
+                </div>
+            </div>
+            <div class="col-3 text-center">
+                <div style="padding: 15px; background: #ecf0f1; border-radius: 8px;">
+                    <div style="font-size: 32px; font-weight: bold; color: #95a5a6;">{{ evento.numero_sesiones }}</div>
+                    <div style="color: #7f8c8d; font-size: 12px;">Sesiones Totales</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Details Table -->
+        <h4 style="color: #2c3e50; margin-top: 30px; margin-bottom: 15px;">Detalle de Participantes</h4>
+        <table class="table table-bordered table-sm" style="font-size: 12px;">
+            <thead style="background-color: #3498db; color: white;">
+                <tr>
+                    <th>Participante</th>
+                    <th>Documento</th>
+                    <th>Correo</th>
+                    <th class="text-center">Asistencias</th>
+                    <th class="text-center">% Asistencia</th>
+                    <th class="text-center">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in participantes %}
+                <tr>
+                    <td>{{ p.inscripcion.get_nombre_completo }}</td>
+                    <td>{{ p.inscripcion.documento }}</td>
+                    <td>{{ p.inscripcion.correo }}</td>
+                    <td class="text-center">{{ p.asistencias }} / {{ evento.numero_sesiones }}</td>
+                    <td class="text-center">{{ p.porcentaje|floatformat:0 }}%</td>
+                    <td class="text-center">
+                        {% if p.cumple %}
+                        <span style="color: #27ae60; font-weight: bold;">✓ Aprobado</span>
+                        {% else %}
+                        <span style="color: #f39c12;">○ Pendiente</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">No hay inscripciones confirmadas.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Footer -->
+        <div class="text-center mt-5" style="padding-top: 20px; border-top: 1px solid #ecf0f1;">
+            <p style="color: #95a5a6; font-size: 11px; margin: 0;">
+                Este reporte fue generado automáticamente por el Sistema de Registro y Control de Eventos
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    #pdf-content, #pdf-content * {
+        visibility: visible;
+    }
+    #pdf-content {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100%;
+        box-shadow: none !important;
+    }
+    .btn, header, footer, .breadcrumb {
+        display: none !important;
+    }
+}
+</style>
+{% endblock %}

@@ -75,24 +75,80 @@ def reporte_asistencia(request, evento_id):
 
 @login_required
 def exportar_reporte_pdf(request, evento_id):
-    """Exportar reporte a PDF (HU-29)"""
+    """Exportar reporte a PDF (HU-29) - Simulación"""
     if not request.user.puede_gestionar_eventos():
         messages.error(request, 'No tiene permisos')
         return redirect('dashboard:index')
     
-    # TODO: Implementar generación de PDF con ReportLab
-    messages.info(request, 'Funcionalidad de exportación PDF en desarrollo')
-    return redirect('reportes:asistencia', evento_id=evento_id)
+    evento = get_object_or_404(Evento, pk=evento_id)
+    inscripciones = evento.inscripciones.filter(estado='CONFIRMADA').select_related('usuario')
+    
+    # Calculate statistics
+    total_inscritos = inscripciones.count()
+    total_asistencias = Asistencia.objects.filter(inscripcion__evento=evento).values('inscripcion').distinct().count()
+    porcentaje_asistencia_global = (total_asistencias / total_inscritos * 100) if total_inscritos > 0 else 0
+    
+    # Details per participant
+    participantes = []
+    for inscripcion in inscripciones:
+        asistencias_count = Asistencia.objects.filter(inscripcion=inscripcion).count()
+        porcentaje = (asistencias_count / evento.numero_sesiones * 100) if evento.numero_sesiones > 0 else 0
+        participantes.append({
+            'inscripcion': inscripcion,
+            'asistencias': asistencias_count,
+            'porcentaje': porcentaje,
+            'cumple': porcentaje >= evento.porcentaje_asistencia_minimo
+        })
+    
+    context = {
+        'evento': evento,
+        'total_inscritos': total_inscritos,
+        'total_asistencias': total_asistencias,
+        'porcentaje_asistencia': porcentaje_asistencia_global,
+        'participantes': participantes,
+        'now': timezone.now(),
+    }
+    
+    return render(request, 'reportes/exportar_pdf.html', context)
+
 
 
 @login_required
 def exportar_reporte_excel(request, evento_id):
-    """Exportar reporte a Excel (HU-29)"""
+    """Exportar reporte a Excel (HU-29) - Simulación"""
     if not request.user.puede_gestionar_eventos():
         messages.error(request, 'No tiene permisos')
         return redirect('dashboard:index')
     
-    # TODO: Implementar exportación a Excel con openpyxl
-    messages.info(request, 'Funcionalidad de exportación Excel en desarrollo')
-    return redirect('reportes:asistencia', evento_id=evento_id)
+    evento = get_object_or_404(Evento, pk=evento_id)
+    inscripciones = evento.inscripciones.filter(estado='CONFIRMADA').select_related('usuario')
+    
+    # Calculate statistics
+    total_inscritos = inscripciones.count()
+    total_asistencias = Asistencia.objects.filter(inscripcion__evento=evento).values('inscripcion').distinct().count()
+    porcentaje_asistencia_global = (total_asistencias / total_inscritos * 100) if total_inscritos > 0 else 0
+    
+    # Details per participant
+    participantes = []
+    for inscripcion in inscripciones:
+        asistencias_count = Asistencia.objects.filter(inscripcion=inscripcion).count()
+        porcentaje = (asistencias_count / evento.numero_sesiones * 100) if evento.numero_sesiones > 0 else 0
+        participantes.append({
+            'inscripcion': inscripcion,
+            'asistencias': asistencias_count,
+            'porcentaje': porcentaje,
+            'cumple': porcentaje >= evento.porcentaje_asistencia_minimo
+        })
+    
+    context = {
+        'evento': evento,
+        'total_inscritos': total_inscritos,
+        'total_asistencias': total_asistencias,
+        'porcentaje_asistencia': porcentaje_asistencia_global,
+        'participantes': participantes,
+        'now': timezone.now(),
+    }
+    
+    return render(request, 'reportes/exportar_excel.html', context)
+
 

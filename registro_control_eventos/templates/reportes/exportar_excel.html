@@ -1,0 +1,170 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Reporte Excel - {{ evento.nombre }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Vista del Reporte Excel</h2>
+        <div>
+            <button onclick="copyTableToClipboard()" class="btn btn-success">
+                <i class="fas fa-copy"></i> Copiar a Excel
+            </button>
+            <a href="{% url 'reportes:asistencia' evento.id %}" class="btn btn-secondary">Volver</a>
+        </div>
+    </div>
+
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> 
+        <strong>Simulación de Excel:</strong> Haga clic en "Copiar a Excel" y luego pegue en Excel, Google Sheets o cualquier hoja de cálculo.
+    </div>
+
+    <div class="card">
+        <div class="card-body" style="overflow-x: auto;">
+            <div id="excel-content">
+                <!-- Header Section -->
+                <table class="table table-borderless mb-4">
+                    <tr>
+                        <td colspan="6" style="background-color: #2e7d32; color: white; padding: 15px; text-align: center;">
+                            <h3 style="margin: 0; font-size: 24px;">REPORTE DE ASISTENCIA</h3>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="background-color: #43a047; color: white; padding: 10px; text-align: center;">
+                            <strong>{{ evento.nombre }}</strong>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan="6" style="padding: 10px; text-align: center; background-color: #f5f5f5;">
+                            Generado el {{ now|date:"d/m/Y" }} a las {{ now|time:"H:i" }}
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Statistics -->
+                <table class="table table-bordered mb-4">
+                    <thead style="background-color: #66bb6a; color: white;">
+                        <tr>
+                            <th>Total Inscritos</th>
+                            <th>Con Asistencia</th>
+                            <th>% Asistencia Global</th>
+                            <th>Sesiones Totales</th>
+                            <th>% Mínimo Requerido</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="text-center"><strong>{{ total_inscritos }}</strong></td>
+                            <td class="text-center"><strong>{{ total_asistencias }}</strong></td>
+                            <td class="text-center"><strong>{{ porcentaje_asistencia|floatformat:1 }}%</strong></td>
+                            <td class="text-center"><strong>{{ evento.numero_sesiones }}</strong></td>
+                            <td class="text-center"><strong>{{ evento.porcentaje_asistencia_minimo }}%</strong></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <!-- Participants Detail -->
+                <table class="table table-bordered table-striped" id="participants-table">
+                    <thead style="background-color: #2e7d32; color: white;">
+                        <tr>
+                            <th>#</th>
+                            <th>Participante</th>
+                            <th>Documento</th>
+                            <th>Correo Electrónico</th>
+                            <th>Asistencias</th>
+                            <th>Total Sesiones</th>
+                            <th>% Asistencia</th>
+                            <th>Estado</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for p in participantes %}
+                        <tr {% if p.cumple %}style="background-color: #e8f5e9;"{% endif %}>
+                            <td>{{ forloop.counter }}</td>
+                            <td>{{ p.inscripcion.get_nombre_completo }}</td>
+                            <td>{{ p.inscripcion.documento }}</td>
+                            <td>{{ p.inscripcion.correo }}</td>
+                            <td class="text-center">{{ p.asistencias }}</td>
+                            <td class="text-center">{{ evento.numero_sesiones }}</td>
+                            <td class="text-center"><strong>{{ p.porcentaje|floatformat:1 }}%</strong></td>
+                            <td class="text-center">
+                                {% if p.cumple %}
+                                <strong style="color: #2e7d32;">✓ APROBADO</strong>
+                                {% else %}
+                                <span style="color: #ff9800;">○ PENDIENTE</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="8" class="text-center">No hay inscripciones confirmadas.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                    <tfoot style="background-color: #f5f5f5; font-weight: bold;">
+                        <tr>
+                            <td colspan="4">TOTAL</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">-</td>
+                            <td class="text-center">{{ porcentaje_asistencia|floatformat:1 }}%</td>
+                            <td class="text-center">{{ participantes|length }}</td>
+                        </tr>
+                    </tfoot>
+                </table>
+
+                <!-- Notes -->
+                <table class="table table-borderless mt-4">
+                    <tr>
+                        <td style="background-color: #fff3cd; padding: 10px; border-left: 4px solid #ff9800;">
+                            <strong>Nota:</strong> Este reporte fue generado automáticamente. Los datos reflejan el estado actual del evento al momento de la generación.
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function copyTableToClipboard() {
+    // Get the content
+    var content = document.getElementById('excel-content');
+    
+    // Create a temporary element
+    var range = document.createRange();
+    range.selectNode(content);
+    window.getSelection().removeAllRanges();
+    window.getSelection().addRange(range);
+    
+    try {
+        // Execute copy command
+        document.execCommand('copy');
+        
+        // Show success message
+        alert('✓ Contenido copiado al portapapeles.\n\nAhora puede pegarlo en Excel, Google Sheets o cualquier hoja de cálculo.');
+    } catch(err) {
+        alert('Error al copiar. Por favor, seleccione y copie manualmente.');
+    }
+    
+    window.getSelection().removeAllRanges();
+}
+</script>
+
+<style>
+#excel-content table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+#excel-content th,
+#excel-content td {
+    border: 1px solid #ddd;
+    padding: 8px;
+}
+
+#excel-content tbody tr:hover {
+    background-color: #f5f5f5;
+}
+</style>
+{% endblock %}
