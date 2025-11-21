@@ -82,80 +82,169 @@ Sistema web desarrollado con Django 5.x para la gestión integral de eventos, in
 - ✅ Logging de eventos
 - ✅ Compatible con navegadores modernos
 
-## Instalación
+## Instalación y Configuración
 
 ### Prerrequisitos
 
-- Python 3.12 o superior
-- pip (gestor de paquetes de Python)
-- Git
+Antes de comenzar, asegúrate de tener instalado:
 
-### Pasos de Instalación
+- **Python 3.12 o superior** - [Descargar](https://www.python.org/downloads/)
+- **pip** (viene incluido con Python)
+- **Git** - [Descargar](https://git-scm.com/)
+- **Editor de código** (recomendado: VS Code, PyCharm)
 
-1. **Clonar el repositorio**
+### Guía de Instalación Paso a Paso
+
+#### 1. Clonar el Repositorio
+
+Abre tu terminal o línea de comandos y ejecuta:
+
 ```bash
-git clone <URL_DEL_REPOSITORIO>
-cd DJANGO_FINAL_TEMPLATE/registro_control_eventos
+git clone https://github.com/nicolasss-dev/APP_DJANGO_COSO.git
+cd APP_DJANGO_COSO
 ```
 
-2. **Crear entorno virtual**
+#### 2. Navegar al Directorio del Proyecto
+
+```bash
+cd registro_control_eventos
+```
+
+Tu ubicación actual debe ser: `APP_DJANGO_COSO/registro_control_eventos/`
+
+#### 3. Crear Entorno Virtual
+
+Es **fundamental** trabajar con un entorno virtual para aislar las dependencias del proyecto.
+
+**Windows:**
 ```bash
 python -m venv venv
 ```
 
-3. **Activar entorno virtual**
+**Linux/Mac:**
+```bash
+python3 -m venv venv
+```
 
-Windows:
+#### 4. Activar el Entorno Virtual
+
+**Windows (PowerShell):**
 ```bash
 venv\Scripts\activate
 ```
 
-Linux/Mac:
+**Windows (CMD):**
+```bash
+venv\Scripts\activate.bat
+```
+
+**Linux/Mac:**
 ```bash
 source venv/bin/activate
 ```
 
-4. **Instalar dependencias**
+> **Nota:** Verás `(venv)` al inicio de tu línea de comandos cuando el entorno esté activado.
+
+#### 5. Instalar Dependencias
+
+Con el entorno virtual activado:
+
 ```bash
+pip install --upgrade pip
 pip install -r requirements.txt
 ```
 
-5. **Configurar variables de entorno**
+Esto instalará todas las bibliotecas necesarias (Django, Pillow, ReportLab, etc.)
 
-Copiar `.env.template` a `.env` y configurar:
-```bash
-cp .env.template .env
-```
+#### 6. Configurar la Base de Datos
 
-Editar `.env` con tus configuraciones.
+Ejecutar las migraciones para crear las tablas en la base de datos:
 
-6. **Ejecutar migraciones**
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
-7. **Crear superusuario**
+#### 7. Crear Superusuario (Administrador)
+
+Este será tu usuario principal para acceder al panel de administración:
+
 ```bash
 python manage.py createsuperuser
 ```
 
-8. **Cargar datos iniciales (opcional)**
+Se te pedirá:
+- **Username:** Ingresa un nombre de usuario (ej: admin)
+- **Email:** Tu correo electrónico
+- **Password:** Una contraseña segura (mínimo 8 caracteres)
+- **Password (again):** Confirma la contraseña
+
+> **Importante:** Guarda estas credenciales en un lugar seguro.
+
+#### 8. Crear Directorios para Archivos Media (Opcional)
+
+El proyecto manejará archivos subidos (imágenes de eventos, certificados, etc.). Asegúrate de que existan los directorios:
+
 ```bash
-python manage.py loaddata fixtures/initial_data.json
+# Windows
+mkdir media\eventos media\certificados media\pagos
+
+# Linux/Mac
+mkdir -p media/eventos media/certificados media/pagos
 ```
 
-9. **Ejecutar servidor de desarrollo**
+#### 9. Ejecutar el Servidor de Desarrollo
+
 ```bash
 python manage.py runserver
 ```
 
-10. **Acceder a la aplicación**
+Deberías ver un mensaje como:
 ```
-http://127.0.0.1:8000/
+Starting development server at http://127.0.0.1:8000/
+Quit the server with CTRL-BREAK.
 ```
 
-Admin: http://127.0.0.1:8000/admin/
+#### 10. Acceder a la Aplicación
+
+Abre tu navegador web y ve a:
+
+- **Página principal**: [http://127.0.0.1:8000/](http://127.0.0.1:8000/)
+- **Panel de administración**: [http://127.0.0.1:8000/admin/](http://127.0.0.1:8000/admin/)
+
+Usa las credenciales del superusuario creadas en el paso 7 para ingresar al admin.
+
+### Datos de Prueba (Opcional)
+
+Si deseas cargar datos de prueba para explorar el sistema:
+
+```bash
+python create_demo_data.py
+```
+
+Esto creará:
+- Eventos de ejemplo
+- Usuarios de prueba
+- Inscripciones simuladas
+- Certificados generados
+
+### Solución de Problemas Comunes
+
+#### Error: "python no se reconoce como comando"
+- **Solución**: Asegúrate de que Python esté en tu PATH del sistema. Reinstala Python y marca la opción "Add Python to PATH".
+
+#### Error: "pip no se reconoce como comando"
+- **Solución**: Usa `python -m pip` en lugar de solo `pip`.
+
+#### Error: "No module named 'django'"
+- **Solución**: Verifica que el entorno virtual esté activado y ejecuta `pip install -r requirements.txt` nuevamente.
+
+#### Error al crear migraciones
+- **Solución**: Ejecuta `python manage.py makemigrations` primero, luego `python manage.py migrate`.
+
+#### Puerto 8000 ya en uso
+- **Solución**: Usa otro puerto: `python manage.py runserver 8001`
+
 
 ## Estructura del Proyecto
 

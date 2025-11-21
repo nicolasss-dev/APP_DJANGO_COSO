@@ -17,6 +17,7 @@
                 <p style="color: #6c757d; margin: 0.5rem 0 0;">Inscripciones</p>
             </div>
         </div>
+        {% if user.puede_gestionar_eventos %}
         <div class="card">
             <div class="card-body text-center">
                 <h3 style="color: #f39c12; font-size: 2.5rem; margin: 0;">${{ stats.total_recaudado|floatformat:0 }}</h3>
@@ -29,6 +30,7 @@
                 <p style="color: #6c757d; margin: 0.5rem 0 0;">Asistencia Promedio</p>
             </div>
         </div>
+        {% endif %}
     </div>
 
     <!-- Columna derecha: resto del dashboard -->

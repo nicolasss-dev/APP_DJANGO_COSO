@@ -45,11 +45,15 @@ whitenoise==6.6.0
 # API REST (opcional, para futuras integraciones)
 djangorestframework==3.14.0
 
-# Celery para tareas asíncronas (opcional)
-# celery==5.3.4
-# redis==5.0.1
+# SQL Parse (para migraciones complejas)
+sqlparse>=0.4.0
+
+# Async support
+asgiref>=3.7.0
 
 # Pasarelas de pago (descomentar según necesidad)
 # stripe==7.8.0  # Para Stripe
 # mercadopago==2.2.1  # Para Mercado Pago
 
+# Nota: Para instalar todas las dependencias:
+# pip install -r requirements.txt
