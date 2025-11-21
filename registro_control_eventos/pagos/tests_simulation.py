@@ -49,7 +49,7 @@ class PaymentSimulationTest(TestCase):
         
         # Create payment methods
         MetodoPago.objects.create(nombre='Tarjeta', codigo='TARJETA', activo=True)
-        MetodoPago.objects.create(nombre='Pasarela', codigo='PASARELA', activo=True)
+        # Pasarela removed
 
     def test_payment_flow_integration(self):
         # 1. Register user (Simulate form submission)
@@ -67,7 +67,7 @@ class PaymentSimulationTest(TestCase):
             'documento': '1111111111',
             'correo': 'user@test.com',
             'telefono': '1234567890',
-            'tipo_asistente': 'ESTUDIANTE'
+            # 'tipo_asistente': 'ESTUDIANTE' # Removed as it doesn't exist
         }
         response = self.client.post(url_registro, data_registro)
         
@@ -79,6 +79,7 @@ class PaymentSimulationTest(TestCase):
         url_seleccion = reverse('pagos:seleccionar_metodo', args=[inscripcion.pk])
         response = self.client.get(url_seleccion)
         self.assertContains(response, 'Tarjeta')
+        self.assertNotContains(response, 'Pasarela') # Ensure Pasarela is not present
         
         # 4. Select Card Payment
         url_pago_tarjeta = reverse('pagos:pagar_tarjeta', args=[inscripcion.pk])

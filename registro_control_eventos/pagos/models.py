@@ -24,7 +24,6 @@ class MetodoPago(models.Model):
         ('EFECTIVO', 'Efectivo'),
         ('TRANSFERENCIA', 'Transferencia Bancaria'),
         ('TARJETA', 'Tarjeta de Crédito/Débito'),
-        ('PASARELA', 'Pasarela de Pagos'),
     ]
     
     codigo = models.CharField(
@@ -275,56 +274,3 @@ class Pago(models.Model):
             'pagos_completados': pagos_completados.count(),
             'pagos_pendientes': pagos_pendientes.count(),
         }
-
-
-class ConfiguracionPasarela(models.Model):
-    """
-    Configuración para pasarelas de pago (HU-26)
-    """
-    PASARELAS = [
-        ('PAYU', 'PayU'),
-        ('WOMPI', 'Wompi'),
-        ('STRIPE', 'Stripe'),
-        ('MERCADOPAGO', 'Mercado Pago'),
-    ]
-    
-    nombre = models.CharField(
-        max_length=20,
-        choices=PASARELAS,
-        unique=True,
-        help_text="Nombre de la pasarela"
-    )
-    activa = models.BooleanField(
-        default=False,
-        help_text="¿Esta pasarela está activa?"
-    )
-    api_key = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="API Key / Secret Key"
-    )
-    public_key = models.CharField(
-        max_length=200,
-        blank=True,
-        help_text="Public Key / Client ID"
-    )
-    url_api = models.URLField(
-        blank=True,
-        help_text="URL de la API de la pasarela"
-    )
-    modo_prueba = models.BooleanField(
-        default=True,
-        help_text="¿Está en modo de prueba?"
-    )
-    configuracion_adicional = models.JSONField(
-        blank=True,
-        null=True,
-        help_text="Configuración adicional en formato JSON"
-    )
-    
-    class Meta:
-        verbose_name = 'Configuración de Pasarela'
-        verbose_name_plural = 'Configuraciones de Pasarelas'
-    
-    def __str__(self):
-        return f"{self.get_nombre_display()} - {'Activa' if self.activa else 'Inactiva'}"

@@ -5,7 +5,7 @@ PRCE - Plataforma de Registro y Control de Eventos
 
 from django import forms
 from django.core.validators import MinValueValidator, RegexValidator
-from .models import Pago, MetodoPago, ConfiguracionPasarela
+from .models import Pago, MetodoPago
 from inscripciones.models import Inscripcion
 from decimal import Decimal
 import re
@@ -246,32 +246,7 @@ class PagoTarjetaForm(PagoBaseForm):
         return instance
 
 
-class PagoPasarelaForm(forms.Form):
-    """Formulario para seleccionar pasarela de pago"""
-    
-    pasarela = forms.ModelChoiceField(
-        queryset=ConfiguracionPasarela.objects.filter(activa=True),
-        empty_label='Seleccione una pasarela',
-        widget=forms.RadioSelect(),
-        required=True,
-        help_text='Seleccione el método de pago en línea'
-    )
-    
-    email_confirmacion = forms.EmailField(
-        widget=forms.EmailInput(attrs={
-            'class': 'form-control',
-            'placeholder': 'correo@ejemplo.com'
-        }),
-        help_text='Correo para recibir confirmación del pago'
-    )
-    
-    aceptar_terminos = forms.BooleanField(
-        required=True,
-        widget=forms.CheckboxInput(attrs={
-            'class': 'form-check-input'
-        }),
-        label='Acepto los términos y condiciones de la pasarela de pago'
-    )
+
 
 
 class ConfirmarPagoForm(forms.Form):

@@ -3,7 +3,7 @@ Configuración del Admin para la aplicación de Pagos
 """
 
 from django.contrib import admin
-from .models import MetodoPago, Pago, ConfiguracionPasarela
+from .models import MetodoPago, Pago
 
 
 @admin.register(MetodoPago)
@@ -67,22 +67,4 @@ class PagoAdmin(admin.ModelAdmin):
     rechazar_pagos.short_description = "Rechazar pagos seleccionados"
 
 
-@admin.register(ConfiguracionPasarela)
-class ConfiguracionPasarelaAdmin(admin.ModelAdmin):
-    """Admin para ConfiguracionPasarela"""
-    list_display = ['get_nombre_display', 'activa', 'modo_prueba']
-    list_filter = ['activa', 'modo_prueba']
-    search_fields = ['nombre']
-    
-    fieldsets = (
-        ('Información', {
-            'fields': ('nombre', 'activa', 'modo_prueba')
-        }),
-        ('Credenciales', {
-            'fields': ('api_key', 'public_key', 'url_api')
-        }),
-        ('Configuración Adicional', {
-            'fields': ('configuracion_adicional',),
-            'classes': ('collapse',)
-        }),
-    )
+

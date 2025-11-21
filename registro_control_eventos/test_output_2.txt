@@ -1,0 +1,167 @@
+Creating test database for alias 'default'...
+
+EEEEEE
+======================================================================
+ERROR: test_anonymous_access_blocked_for_auth_inscription (pagos.tests_public_access.PublicPaymentAccessTest.test_anonymous_access_blocked_for_auth_inscription)
+Verificar que un usuario an¾nimo NO puede acceder a una inscripci¾n de usuario registrado
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_public_access.py", line 35, in setUp
+    self.evento = Evento.objects.create(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        nombre='Evento Pago',
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        organizador=self.organizador
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Evento() got unexpected keyword arguments: 'ubicacion', 'organizador'
+
+======================================================================
+ERROR: test_anonymous_access_to_own_inscription (pagos.tests_public_access.PublicPaymentAccessTest.test_anonymous_access_to_own_inscription)
+Verificar que un usuario an¾nimo puede acceder a su inscripci¾n
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_public_access.py", line 35, in setUp
+    self.evento = Evento.objects.create(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        nombre='Evento Pago',
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        organizador=self.organizador
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Evento() got unexpected keyword arguments: 'ubicacion', 'organizador'
+
+======================================================================
+ERROR: test_auth_user_access_to_own_inscription (pagos.tests_public_access.PublicPaymentAccessTest.test_auth_user_access_to_own_inscription)
+Verificar que un usuario autenticado puede acceder a su inscripci¾n
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_public_access.py", line 35, in setUp
+    self.evento = Evento.objects.create(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        nombre='Evento Pago',
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        organizador=self.organizador
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Evento() got unexpected keyword arguments: 'ubicacion', 'organizador'
+
+======================================================================
+ERROR: test_auth_user_blocked_for_other_inscription (pagos.tests_public_access.PublicPaymentAccessTest.test_auth_user_blocked_for_other_inscription)
+Verificar que un usuario autenticado NO puede acceder a inscripci¾n ajena
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_public_access.py", line 35, in setUp
+    self.evento = Evento.objects.create(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        nombre='Evento Pago',
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        organizador=self.organizador
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Evento() got unexpected keyword arguments: 'ubicacion', 'organizador'
+
+======================================================================
+ERROR: test_organizer_access (pagos.tests_public_access.PublicPaymentAccessTest.test_organizer_access)
+Verificar que un organizador puede acceder a cualquier inscripci¾n
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_public_access.py", line 35, in setUp
+    self.evento = Evento.objects.create(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        nombre='Evento Pago',
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        organizador=self.organizador
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Evento() got unexpected keyword arguments: 'ubicacion', 'organizador'
+
+======================================================================
+ERROR: test_payment_process_anonymous (pagos.tests_public_access.PublicPaymentAccessTest.test_payment_process_anonymous)
+Verificar proceso de pago completo para usuario an¾nimo
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\Nicolas\Documents\trae_projects\DJANGO_FINAL_TEMPLATE\registro_control_eventos\pagos\tests_public_access.py", line 35, in setUp
+    self.evento = Evento.objects.create(
+                  ~~~~~~~~~~~~~~~~~~~~~^
+        nombre='Evento Pago',
+        ^^^^^^^^^^^^^^^^^^^^^
+    ...<7 lines>...
+        organizador=self.organizador
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\manager.py", line 87, in manager_method
+    return getattr(self.get_queryset(), name)(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\query.py", line 661, in create
+    obj = self.model(**kwargs)
+  File "C:\Users\Nicolas\AppData\Roaming\Python\Python313\site-packages\django\db\models\base.py", line 569, in __init__
+    raise TypeError(
+    ...<2 lines>...
+    )
+TypeError: Evento() got unexpected keyword arguments: 'ubicacion', 'organizador'
+
+----------------------------------------------------------------------
+Ran 6 tests in 5.748s
+
+FAILED (errors=6)
+Destroying test database for alias 'default'...
+
+Found 6 test(s).
+System check identified no issues (0 silenced).

@@ -18,16 +18,37 @@ from decimal import Decimal
 import time
 import uuid
 
-from .models import Pago, MetodoPago, ConfiguracionPasarela
+from .models import Pago, MetodoPago
 from .forms import (
     PagoEfectivoForm, 
     PagoTransferenciaForm, 
-    PagoTarjetaForm, 
-    PagoPasarelaForm,
+    PagoTarjetaForm,
     ConfirmarPagoForm
 )
 from inscripciones.models import Inscripcion
 from eventos.models import Evento
+
+
+def verificar_acceso_pago(request, inscripcion):
+    """
+    Verifica si el usuario actual tiene permiso para ver/pagar esta inscripción.
+    Permite acceso si:
+    1. El usuario es el dueño de la inscripción.
+    2. La inscripción es anónima (usuario=None) y se accede con el ID correcto.
+    3. El usuario tiene permisos de gestión de eventos.
+    """
+    # Si el usuario tiene permisos de gestión, permitir siempre
+    if request.user.is_authenticated and request.user.puede_gestionar_eventos():
+        return True
+        
+    # Si la inscripción tiene usuario asignado
+    if inscripcion.usuario:
+        # Permitir solo si es el mismo usuario
+        return request.user.is_authenticated and inscripcion.usuario == request.user
+        
+    # Si la inscripción es anónima (sin usuario)
+    # Permitir acceso público (cualquiera con el link puede pagar)
+    return True
 
 
 @login_required
@@ -74,34 +95,50 @@ def lista_pagos(request):
     return render(request, 'pagos/lista.html', context)
 
 
-@login_required
 def seleccionar_metodo_pago(request, inscripcion_id):
     """Vista para seleccionar método de pago"""
     inscripcion = get_object_or_404(Inscripcion, pk=inscripcion_id)
     
+    # Verificar acceso
+    if not verificar_acceso_pago(request, inscripcion):
+        if request.user.is_authenticated:
+            messages.error(request, 'No tiene permisos para ver esta inscripción')
+            return redirect('inscripciones:lista')
+        else:
+            return redirect(f"{reverse('usuarios:login')}?next={request.path}")
+    
     # Verificar que la inscripción esté pendiente de pago
     if inscripcion.pago_confirmado:
         messages.warning(request, 'Esta inscripción ya tiene un pago confirmado')
-        return redirect('inscripciones:detalle', pk=inscripcion_id)
+        # Redirigir según el tipo de usuario
+        if request.user.is_authenticated:
+            return redirect('inscripciones:detalle', pk=inscripcion_id)
+        else:
+            return redirect('inscripciones:confirmacion_inscripcion', pk=inscripcion_id)
     
     # Obtener métodos de pago activos
     metodos_pago = MetodoPago.objects.filter(activo=True)
-    pasarelas = ConfiguracionPasarela.objects.filter(activa=True)
-    
     context = {
         'inscripcion': inscripcion,
         'metodos_pago': metodos_pago,
-        'pasarelas': pasarelas,
         'monto': inscripcion.evento.costo,
     }
     
     return render(request, 'pagos/seleccionar_metodo.html', context)
 
 
-@login_required
 def procesar_pago_efectivo(request, inscripcion_id):
     """Procesar pago en efectivo"""
     inscripcion = get_object_or_404(Inscripcion, pk=inscripcion_id)
+    
+    # Verificar acceso
+    if not verificar_acceso_pago(request, inscripcion):
+        if request.user.is_authenticated:
+            messages.error(request, 'No tiene permisos para realizar este pago')
+            return redirect('inscripciones:lista')
+        else:
+            return redirect(f"{reverse('usuarios:login')}?next={request.path}")
+
     metodo = get_object_or_404(MetodoPago, codigo='EFECTIVO')
     
     if request.method == 'POST':
@@ -111,7 +148,7 @@ def procesar_pago_efectivo(request, inscripcion_id):
             pago.inscripcion = inscripcion
             pago.metodo_pago = metodo
             pago.estado = 'COMPLETADO'  # Efectivo se considera completado inmediatamente
-            pago.registrado_por = request.user
+            pago.registrado_por = request.user if request.user.is_authenticated else None
             pago.save()
             
             # Actualizar inscripción
@@ -137,10 +174,18 @@ def procesar_pago_efectivo(request, inscripcion_id):
     return render(request, 'pagos/form_efectivo.html', context)
 
 
-@login_required
 def procesar_pago_transferencia(request, inscripcion_id):
     """Procesar pago por transferencia bancaria"""
     inscripcion = get_object_or_404(Inscripcion, pk=inscripcion_id)
+    
+    # Verificar acceso
+    if not verificar_acceso_pago(request, inscripcion):
+        if request.user.is_authenticated:
+            messages.error(request, 'No tiene permisos para realizar este pago')
+            return redirect('inscripciones:lista')
+        else:
+            return redirect(f"{reverse('usuarios:login')}?next={request.path}")
+
     metodo = get_object_or_404(MetodoPago, codigo='TRANSFERENCIA')
     
     if request.method == 'POST':
@@ -150,7 +195,7 @@ def procesar_pago_transferencia(request, inscripcion_id):
             pago.inscripcion = inscripcion
             pago.metodo_pago = metodo
             pago.estado = 'PENDIENTE'  # Transferencias requieren verificación
-            pago.registrado_por = request.user
+            pago.registrado_por = request.user if request.user.is_authenticated else None
             
             # Guardar comprobante si se subió
             if 'comprobante' in request.FILES:
@@ -172,10 +217,18 @@ def procesar_pago_transferencia(request, inscripcion_id):
     return render(request, 'pagos/form_transferencia.html', context)
 
 
-@login_required
 def procesar_pago_tarjeta(request, inscripcion_id):
     """Procesar pago con tarjeta (SIMULADO)"""
     inscripcion = get_object_or_404(Inscripcion, pk=inscripcion_id)
+    
+    # Verificar acceso
+    if not verificar_acceso_pago(request, inscripcion):
+        if request.user.is_authenticated:
+            messages.error(request, 'No tiene permisos para realizar este pago')
+            return redirect('inscripciones:lista')
+        else:
+            return redirect(f"{reverse('usuarios:login')}?next={request.path}")
+
     metodo = get_object_or_404(MetodoPago, codigo='TARJETA')
     
     if request.method == 'POST':
@@ -186,7 +239,7 @@ def procesar_pago_tarjeta(request, inscripcion_id):
             pago.inscripcion = inscripcion
             pago.metodo_pago = metodo
             pago.estado = 'COMPLETADO'
-            pago.registrado_por = request.user
+            pago.registrado_por = request.user if request.user.is_authenticated else None
             
             # Generar ID de transacción simulado
             pago.pasarela_transaccion_id = f"SIM-{uuid.uuid4().hex[:12].upper()}"
@@ -216,95 +269,17 @@ def procesar_pago_tarjeta(request, inscripcion_id):
     return render(request, 'pagos/form_tarjeta.html', context)
 
 
-@login_required
-def procesar_pago_pasarela(request, inscripcion_id):
-    """Iniciar procesamiento con pasarela de pago (SIMULADO)"""
-    inscripcion = get_object_or_404(Inscripcion, pk=inscripcion_id)
-    metodo = get_object_or_404(MetodoPago, codigo='PASARELA')
-    
-    if request.method == 'POST':
-        form = PagoPasarelaForm(request.POST)
-        if form.is_valid():
-            pasarela = form.cleaned_data['pasarela']
-            email = form.cleaned_data['email_confirmacion']
-            
-            # Crear registro de pago pendiente
-            pago = Pago.objects.create(
-                inscripcion=inscripcion,
-                metodo_pago=metodo,
-                monto=inscripcion.evento.costo,
-                estado='PENDIENTE',
-                registrado_por=request.user,
-                referencia=f"PASARELA-{pasarela.nombre}-{uuid.uuid4().hex[:8].upper()}",
-                datos_pasarela={
-                    'pasarela': pasarela.nombre,
-                    'email_confirmacion': email,
-                }
-            )
-            
-            # Redirigir a página de simulación de pasarela
-            return redirect('pagos:simulacion_pasarela', pago_id=pago.id)
-    else:
-        form = PagoPasarelaForm(initial={
-            'email_confirmacion': inscripcion.correo
-        })
-    
-    context = {
-        'form': form,
-        'inscripcion': inscripcion,
-        'metodo': metodo,
-    }
-    
-    return render(request, 'pagos/form_pasarela.html', context)
-
-
-def simulacion_pasarela(request, pago_id):
-    """Página de simulación de pasarela de pago"""
-    pago = get_object_or_404(Pago, pk=pago_id)
-    
-    context = {
-        'pago': pago,
-        'pasarela_nombre': pago.datos_pasarela.get('pasarela', 'Pasarela'),
-    }
-    
-    return render(request, 'pagos/simulacion_pasarela.html', context)
-
-
-def callback_pasarela(request, pago_id):
-    """Callback simulado de pasarela de pago"""
-    pago = get_object_or_404(Pago, pk=pago_id)
-    
-    # SIMULACIÓN: Marcar como exitoso
-    resultado = request.GET.get('resultado', 'exito')
-    
-    if resultado == 'exito':
-        pago.estado = 'COMPLETADO'
-        pago.pasarela_transaccion_id = f"SIM-TRX-{uuid.uuid4().hex[:16].upper()}"
-        pago.save()
-        
-        # Actualizar inscripción
-        inscripcion = pago.inscripcion
-        inscripcion.pago_confirmado = True
-        inscripcion.fecha_confirmacion = timezone.now()
-        inscripcion.estado = 'CONFIRMADA'
-        inscripcion.save()
-        
-        # Enviar notificación (simulada)
-        pago.enviar_notificacion_confirmacion()
-        
-        messages.success(request, '✓ ¡Pago procesado exitosamente!')
-        return redirect('inscripciones:confirmacion_inscripcion', pk=pago.inscripcion.pk)
-    else:
-        pago.estado = 'RECHAZADO'
-        pago.save()
-        messages.error(request, '✗ El pago fue rechazado. Intente nuevamente.')
-        return redirect('pagos:confirmacion', pago_id=pago.id)
-
-
-@login_required
 def confirmacion_pago(request, pago_id):
     """Página de confirmación después del pago"""
     pago = get_object_or_404(Pago, pk=pago_id)
+    
+    # Verificar acceso a través de la inscripción asociada
+    if not verificar_acceso_pago(request, pago.inscripcion):
+        if request.user.is_authenticated:
+            messages.error(request, 'No tiene permisos para ver este pago')
+            return redirect('inscripciones:lista')
+        else:
+            return redirect(f"{reverse('usuarios:login')}?next={request.path}")
     
     context = {
         'pago': pago,

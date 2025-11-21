@@ -117,7 +117,7 @@
                     </small>
                 </li>
                 
-                {% if not evento.es_gratuito %}
+                {% if not evento.es_gratuito and inscripcion.estado != 'CONFIRMADA' %}
                 <li>
                     <strong>Complete el pago</strong><br>
                     <small style="color: #6c757d;">

@@ -15,11 +15,7 @@ urlpatterns = [
     path('pagar/<int:inscripcion_id>/efectivo/', views.procesar_pago_efectivo, name='pagar_efectivo'),
     path('pagar/<int:inscripcion_id>/transferencia/', views.procesar_pago_transferencia, name='pagar_transferencia'),
     path('pagar/<int:inscripcion_id>/tarjeta/', views.procesar_pago_tarjeta, name='pagar_tarjeta'),
-    path('pagar/<int:inscripcion_id>/pasarela/', views.procesar_pago_pasarela, name='pagar_pasarela'),
-    
-    # Simulación de pasarela
-    path('pasarela/<int:pago_id>/simulacion/', views.simulacion_pasarela, name='simulacion_pasarela'),
-    path('pasarela/<int:pago_id>/callback/', views.callback_pasarela, name='callback_pasarela'),
+
     
     # Gestión de pagos
     path('<int:pago_id>/', views.detalle_pago, name='detalle'),

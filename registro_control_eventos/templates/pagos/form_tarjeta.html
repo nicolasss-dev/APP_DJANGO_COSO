@@ -8,64 +8,81 @@
 {% endblock %}
 
 {% block content %}
-<div class="container mt-4 mb-5">
-    <div class="row">
-        <div class="col-lg-6 offset-lg-3">
-            <h2 class="mb-4">💳 Pago con Tarjeta</h2>
+<div class="container mt-5 mb-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
+            <div class="text-center mb-4">
+                <h2 class="fw-bold text-primary">💳 Pago con Tarjeta</h2>
+                <p class="text-muted">Complete los datos de su tarjeta para finalizar la inscripción</p>
+            </div>
             
             <!-- Vista Previa de Tarjeta -->
-            <div class="card-preview fade-in">
-                <div class="card-chip"></div>
-                <div class="card-number" id="cardNumberDisplay">•••• •••• •••• ••••</div>
-                <div class="card-details">
+            <div class="card-preview fade-in mb-4 shadow-lg" style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 15px; padding: 20px; color: white;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <div class="card-chip" style="width: 50px; height: 35px; background: linear-gradient(135deg, #e0e0e0 0%, #bdbdbd 100%); border-radius: 5px;"></div>
+                    <div class="card-icon" id="cardIcon" style="font-size: 24px;"></div>
+                </div>
+                <div class="card-number mb-4" id="cardNumberDisplay" style="font-size: 1.5rem; letter-spacing: 2px; font-family: 'Courier New', monospace;">•••• •••• •••• ••••</div>
+                <div class="card-details d-flex justify-content-between">
                     <div>
-                        <small>TITULAR</small>
-                        <div id="cardNameDisplay">NOMBRE TITULAR</div>
+                        <small style="opacity: 0.8; font-size: 0.7rem;">TITULAR</small>
+                        <div id="cardNameDisplay" style="font-weight: bold;">NOMBRE TITULAR</div>
                     </div>
                     <div>
-                        <small>VENCE</small>
-                        <div id="cardExpDisplay">MM/AA</div>
+                        <small style="opacity: 0.8; font-size: 0.7rem;">VENCE</small>
+                        <div id="cardExpDisplay" style="font-weight: bold;">MM/AA</div>
                     </div>
                 </div>
-                <div class="card-icon" id="cardIcon"></div>
             </div>
 
             <!-- Formulario -->
-            <div class="card">
-                <div class="card-body">
+            <div class="card shadow-sm border-0" style="border-radius: 15px;">
+                <div class="card-body p-4">
                     <form method="post" id="cardPaymentForm" class="needs-validation" novalidate>
                         {% csrf_token %}
                         
-                        <div class="mb-3">
-                            <label for="{{ form.numero_tarjeta.id_for_label }}" class="form-label">Número de Tarjeta</label>
-                            {{ form.numero_tarjeta }}
+                        <div class="mb-4">
+                            <label for="{{ form.numero_tarjeta.id_for_label }}" class="form-label fw-bold">Número de Tarjeta</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-credit-card text-muted"></i></span>
+                                {{ form.numero_tarjeta }}
+                            </div>
                             <small class="form-text text-muted">{{ form.numero_tarjeta.help_text }}</small>
                             {% if form.numero_tarjeta.errors %}
                             <div class="invalid-feedback d-block">{{ form.numero_tarjeta.errors.0 }}</div>
                             {% endif %}
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.nombre_titular.id_for_label }}" class="form-label">Nombre del Titular</label>
-                            {{ form.nombre_titular }}
+                        <div class="mb-4">
+                            <label for="{{ form.nombre_titular.id_for_label }}" class="form-label fw-bold">Nombre del Titular</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0"><i class="fas fa-user text-muted"></i></span>
+                                {{ form.nombre_titular }}
+                            </div>
                             {% if form.nombre_titular.errors %}
                             <div class="invalid-feedback d-block">{{ form.nombre_titular.errors.0 }}</div>
                             {% endif %}
                         </div>
 
                         <div class="row">
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.fecha_expiracion.id_for_label }}" class="form-label">Fecha de Expiración</label>
-                                {{ form.fecha_expiracion }}
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.fecha_expiracion.id_for_label }}" class="form-label fw-bold">Fecha de Expiración</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-calendar-alt text-muted"></i></span>
+                                    {{ form.fecha_expiracion }}
+                                </div>
                                 <small class="form-text text-muted">MM/AA</small>
                                 {% if form.fecha_expiracion.errors %}
                                 <div class="invalid-feedback d-block">{{ form.fecha_expiracion.errors.0 }}</div>
                                 {% endif %}
                             </div>
                             
-                            <div class="col-md-6 mb-3">
-                                <label for="{{ form.cvv.id_for_label }}" class="form-label">CVV</label>
-                                {{ form.cvv }}
+                            <div class="col-md-6 mb-4">
+                                <label for="{{ form.cvv.id_for_label }}" class="form-label fw-bold">CVV</label>
+                                <div class="input-group">
+                                    <span class="input-group-text bg-light border-end-0"><i class="fas fa-lock text-muted"></i></span>
+                                    {{ form.cvv }}
+                                </div>
                                 <small class="form-text text-muted">3-4 dígitos</small>
                                 {% if form.cvv.errors %}
                                 <div class="invalid-feedback d-block">{{ form.cvv.errors.0 }}</div>
@@ -73,11 +90,11 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label">Tipo de Tarjeta</label>
-                            <div>
+                        <div class="mb-4">
+                            <label class="form-label fw-bold">Tipo de Tarjeta</label>
+                            <div class="d-flex gap-3">
                                 {% for radio in form.tipo_tarjeta %}
-                                <div class="form-check form-check-inline">
+                                <div class="form-check">
                                     {{ radio.tag }}
                                     <label class="form-check-label" for="{{ radio.id_for_label }}">
                                         {{ radio.choice_label }}
@@ -87,35 +104,40 @@
                             </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.cuotas.id_for_label }}" class="form-label">Cuotas</label>
+                        <div class="mb-4">
+                            <label for="{{ form.cuotas.id_for_label }}" class="form-label fw-bold">Cuotas</label>
                             {{ form.cuotas }}
                         </div>
 
-                        <div class="mb-3">
-                            <label for="{{ form.monto.id_for_label }}" class="form-label">Monto</label>
-                            {{ form.monto }}
+                        <div class="mb-4">
+                            <label for="{{ form.monto.id_for_label }}" class="form-label fw-bold">Monto a Pagar</label>
+                            <div class="input-group">
+                                <span class="input-group-text bg-light border-end-0 fw-bold">$</span>
+                                {{ form.monto }}
+                            </div>
                             {% if form.monto.errors %}
                             <div class="invalid-feedback d-block">{{ form.monto.errors.0 }}</div>
                             {% endif %}
                         </div>
 
                         <div class="mb-4">
-                            <label for="{{ form.notas.id_for_label }}" class="form-label">Notas (Opcional)</label>
+                            <label for="{{ form.notas.id_for_label }}" class="form-label fw-bold">Notas (Opcional)</label>
                             {{ form.notas }}
                         </div>
 
-                        <div class="alert alert-warning">
-                            <i class="fas fa-exclamation-triangle"></i>
-                            <strong>Sistema Simulado:</strong> Este es un pago simulado. Puede ingresar cualquier número de tarjeta.
+                        <div class="alert alert-warning d-flex align-items-center" role="alert">
+                            <i class="fas fa-exclamation-triangle me-2"></i>
+                            <div>
+                                <strong>Sistema Simulado:</strong> Este es un pago simulado. Puede ingresar cualquier número de tarjeta válido.
+                            </div>
                         </div>
 
-                        <div class="d-grid gap-2">
-                            <button type="submit" class="btn btn-primary btn-lg">
-                                <i class="fas fa-lock"></i> Procesar Pago - ${{ form.monto.value|default:inscripcion.evento.costo }}
+                        <div class="d-grid gap-2 mt-4">
+                            <button type="submit" class="btn btn-primary btn-lg shadow-sm" style="border-radius: 10px;">
+                                <i class="fas fa-lock me-2"></i> Procesar Pago - ${{ form.monto.value|default:inscripcion.evento.costo }}
                             </button>
-                            <a href="{% url 'pagos:seleccionar_metodo' inscripcion.id %}" class="btn btn-outline-secondary">
-                                <i class="fas fa-arrow-left"></i> Cambiar Método
+                            <a href="{% url 'pagos:seleccionar_metodo' inscripcion.id %}" class="btn btn-outline-secondary btn-lg" style="border-radius: 10px;">
+                                <i class="fas fa-arrow-left me-2"></i> Cambiar Método
                             </a>
                         </div>
                     </form>
